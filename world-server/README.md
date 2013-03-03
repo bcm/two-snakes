@@ -43,6 +43,7 @@ $ sbt
 > compile
 [success] Total time: 1 s, completed Mar 3, 2013 11:29:36 AM
 > 
+```
 
 Remove compiled code in the same way:
 
@@ -53,7 +54,7 @@ $ sbt clean
 [success] Total time: 0 s, completed Mar 3, 2013 11:30:56 AM
 ```
 
-## 3. Run the server with sbt
+## 3. Run the server
 
 The server runs on port 8888 by default.
 
