@@ -19,8 +19,8 @@ define [
 </form>
 """
 
-    constructor: ->
-      @$el = $('#main')
+    constructor: (@app) ->
+      @$el = $('#login')
 
       this.delegateEvents {
         'submit form': 'logIn'
@@ -37,8 +37,9 @@ define [
         @alertView.close() if @alertView?
 
       this.listenTo credentials, 'loginSuccess', (token) =>
-        @alertView = new AlertView(@$el, "Success! Session token is #{token}", level: 'success')
-        @alertView.render()
+        @app.startSession(token)
+        this.remove()
+        @app.router.navigate('game', trigger: true, replace: true)
 
       this.listenTo credentials, 'loginFailure', =>
         @alertView = new AlertView(@$el, "Login failed", level: 'error')

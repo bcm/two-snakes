@@ -1,13 +1,13 @@
 define [
   'jquery',
   'underscore',
-  'backbone'
-], ($, _, Backbone) ->
+  'backbone',
+  'account_nav_view'
+], ($, _, Backbone, AccountNavView) ->
   'use strict'
 
   class GameView extends Backbone.View
     @_TEMPLATE = """
-<h2>World server echo demo</h2>
 <input type="text" name="message" placeholder="type a message and press Enter" class='input-xxlarge'/>
 <h3>Output</h3>
 <ul id="output" class="unstyled"></ul>
@@ -19,6 +19,9 @@ define [
     render: =>
       @$el.html(_.template(GameView._TEMPLATE, {}))
 
+      @accountNavView ?= new AccountNavView(@app)
+      @accountNavView.render()
+
       @input = $('input[name=message]')
       @output = $('#output')
 
@@ -29,3 +32,7 @@ define [
       # XXX: should probably be a sub-view
       this.listenTo @app.server, 'message:echo', (message) =>
         @output.append("<li>#{message.get('text')}</li>")
+
+    remove: =>
+      @accountNavView.remove() if @accountNavView
+      super()

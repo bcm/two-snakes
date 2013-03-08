@@ -11,6 +11,7 @@ import org.mashupbots.socko.routes._
 import org.mashupbots.socko.infrastructure.Logger
 import org.mashupbots.socko.webserver.WebServer
 import org.mashupbots.socko.webserver.WebServerConfig
+import scala.util.parsing.json.JSON
 
 object WorldServer extends Logger {
   val actorSystem = ActorSystem("WorldActorSystem")
@@ -39,6 +40,7 @@ class WebSocketHandler extends Actor {
 
   def receive = {
     case event: WebSocketFrameEvent =>
+      val parsed = JSON.parseFull(event.readText)
       event.writeText(event.readText)
       context.stop(self)
     case _ => {

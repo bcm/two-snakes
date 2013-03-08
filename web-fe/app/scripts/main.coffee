@@ -4,6 +4,7 @@ require.config {
     jquery: '../components/jquery/jquery',
     underscore: '../components/lodash/dist/lodash.underscore',
     backbone: '../components/backbone/backbone',
+    modernizr: '../components/modernizr/modernizr',
     bootstrap: 'vendor/bootstrap',
     jquery_websocket: 'vendor/jquery.websocket'
   },
@@ -13,8 +14,7 @@ require.config {
       exports: 'jquery'
     },
     jquery_websocket: {
-      deps: ['jquery', 'json2'],
-      exports: 'jquery'
+      deps: ['jquery', 'json2']
     },
     underscore: {
       exports: '_'
@@ -22,13 +22,17 @@ require.config {
     backbone: {
       deps: ['underscore', 'jquery'],
       exports: 'Backbone'
+    },
+    modernizr: {
+      exports: 'Modernizr'
     }
   }
 }
 
-require ['app'], (TwoSnakes) ->
+require ['app', 'modernizr'], (TwoSnakes, Modernizr) ->
   'use strict'
 
-  # XXX: ensure that the browser supports websockets
-
-  app = new TwoSnakes
+  if Modernizr.websockets and Modernizr.localstorage
+    window.app = new TwoSnakes
+  else
+    alert("Your browser sucks!")
