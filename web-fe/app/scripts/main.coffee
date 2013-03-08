@@ -28,4 +28,7 @@ require.config {
 
 require ['app'], (TwoSnakes) ->
   'use strict'
+
+  # XXX: ensure that the browser supports websockets
+
   app = new TwoSnakes

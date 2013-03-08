@@ -8,14 +8,13 @@ define [
   'use strict'
 
   class Router extends Backbone.Router
-    constructor: ->
+    constructor: (@app) ->
       this.route '*anything', 'login', ->
         @loginView ?= new LoginView
         @loginView.render()
 
       this.route 'game', 'game', ->
-        @server ?= new WorldServer
-        @gameView ?= new GameView(server)
+        @gameView ?= new GameView(@app)
         @gameView.render()
 
       Backbone.history.start()

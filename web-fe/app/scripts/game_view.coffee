@@ -12,7 +12,8 @@ define [
 <h3>Output</h3>
 <ul id="output" class="unstyled"></ul>
 """
-    constructor: (@server) ->
+    constructor: (@app) ->
+      @app.connectToWorldServer()
       @$el = $('#game')
 
     render: =>
@@ -22,9 +23,9 @@ define [
       @output = $('#output')
 
       @input.focus().on 'change', (e) =>
-        @server.sendMessage(@server.createMessage({type: 'echo', text: @input.val()}))
+        @app.server.sendMessage(@app.server.createMessage({type: 'echo', text: @input.val()}))
         @input.val('')
 
       # XXX: should probably be a sub-view
-      this.listenTo @server, 'message:echo', (message) =>
+      this.listenTo @app.server, 'message:echo', (message) =>
         @output.append("<li>#{message.get('text')}</li>")

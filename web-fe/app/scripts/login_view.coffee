@@ -40,7 +40,7 @@ define [
         @alertView = new AlertView(@$el, "Success! Session token is #{token}", level: 'success')
         @alertView.render()
 
-      this.listenTo credentials, 'loginFailed', =>
+      this.listenTo credentials, 'loginFailure', =>
         @alertView = new AlertView(@$el, "Login failed", level: 'error')
         @alertView.render()
 

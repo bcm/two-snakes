@@ -12,5 +12,5 @@ define [
       this.on 'syncSuccess', (data) =>
         this.trigger 'loginSuccess', data.token
       this.on 'syncError', (code, message) =>
-        this.trigger 'loginFailed'
+        this.trigger 'loginFailure'
       super(attributes, options)
