@@ -18,5 +18,11 @@ module ApiServer
     config.active_record.schema_format = :sql
     config.active_record.whitelist_attributes = true
     config.assets.enabled = false
+    config.middleware.use Rack::Cors do
+      allow do
+        origins 'http://localhost:9000'
+        resource '*', headers: :any, methods: [:get, :put, :post, :patch, :delete]
+      end
+    end
   end
 end

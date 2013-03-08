@@ -2,7 +2,7 @@ define [
   'jquery',
   'underscore',
   'backbone'
-], ($, _, Backbone, template) ->
+], ($, _, Backbone) ->
   'use strict'
 
   class GameView extends Backbone.View
@@ -13,10 +13,10 @@ define [
 <ul id="output" class="unstyled"></ul>
 """
     constructor: (@server) ->
-      @el = $('#game')
+      @$el = $('#game')
 
     render: =>
-      @el.html(_.template(GameView._TEMPLATE, {}))
+      @$el.html(_.template(GameView._TEMPLATE, {}))
 
       @input = $('input[name=message]')
       @output = $('#output')

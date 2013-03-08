@@ -2,9 +2,8 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  ''
   'jquery_websocket'
-], ($, _, Backbone, Router) ->
+], ($, _, Backbone) ->
   'use strict'
 
   class WorldServerMessage extends Backbone.Model
