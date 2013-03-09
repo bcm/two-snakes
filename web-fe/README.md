@@ -4,9 +4,9 @@ Renders a web interface to the API and World Servers
 
 ## 1. Platform & build environment
 
-Executable code written in [CoffeeScript](http://coffeescript.org/).
+Executable code is written in [CoffeeScript](http://coffeescript.org/).
 
-The CoffeeScript build environment requires a [Node](http://nodejs.org/) JavaScript runtime and the [NPM](https://npmjs.org/) package manager.
+The CoffeeScript build environment requires the [Node](http://nodejs.org/) JavaScript platform and the [NPM](https://npmjs.org/) package manager.
 
 ```sh
 # Install Node on OS X with Homebrew
@@ -16,10 +16,6 @@ $ brew install node
 $ curl https://npmjs.org/install.sh | sh
 ```
 
-# Install NPM dependencies
-$ npm install
-```
-
 CSS code written using the [SCSS syntax](http://sass-lang.com/). Compiling SCSS code requires [Ruby](http://www.ruby-lang.org/en/) and the [Compass](http://compass-style.org/) framework. These packages are installed via the [main project instructions](../).
 
 ### NPM dependencies
@@ -27,7 +23,7 @@ CSS code written using the [SCSS syntax](http://sass-lang.com/). Compiling SCSS 
 Some build tools are installed via NPM.
 
 ```sh
-# Install NPM dependencies
+# Install NPM dependencies into `node_modules/`
 $ npm install
 ```
 
@@ -75,6 +71,4 @@ Watching app/scripts/{,*/}*.coffee
 Watching test/spec/{,*/}*.coffee
 Watching app/styles/{,*/}*.{scss,sass}
 Watching app/*.html,{.tmp,app}/styles/{,*/}*.css,{.tmp,app}/scripts/{,*/}*.js,app/images/{,*/}*.{png,jpg,jpeg,webp}
-
-
 ```
