@@ -15,15 +15,29 @@ Note that the API server has its own set of gem dependencies in addition to thos
 $ bundle
 ```
 
-## 2. Database
+## 2. Environment-specific configuration
+
+Configuration items specific to the host environment are configured in the `.env` file. This file is read when the server starts up and its contents are made available to the server process as environment variables. The file is ignored by git and must be created by hand.
+
+### 2.1 Development environment
+
+```sh
+$ echo RACK_ENV=development >> .env
+```
+
+## 3. Database
 
 Data is stored in [PostgreSQL](http://www.postgresql.org/).
 
-### 2.1 Database Connection
+### 3.1 Database Connection
 
-Database connection information is taken from the `DATABASE_URL` environment variable in the `.env` file (see below).
+Database connection information is taken from the `DATABASE_URL` environment variable in the `.env` file.
 
-### 2.2 Database Setup
+```sh
+$ echo DATABASE_URL=postgresql://twosnakes:twosnakes@localhost/twosnakes_development >> .env
+```
+
+### 3.2 Database Setup
 
 Use these commands to set up the database in Postgres:
 
@@ -34,7 +48,7 @@ Enter password for new role: twosnakes
 Enter it again: twosnakes
 ```
 
-### 2.3 Database Migration
+### 3.3 Database Migration
 
 Use these commands to create and migrate the database:
 
@@ -44,15 +58,6 @@ $ rake db:create
 
 # Applies migrations to arrive at the final schema
 $ rake db:migrate
-```
-
-## 3. Environment-specific configuration
-
-Configuration items specific to the host environment are configured in the `.env` file. This file is read when the server starts up and its contents are made available to the server process as environment variables. `.env` is ignored by git and must be created by hand.
-
-```sh
-$ echo RACK_ENV=development >> .env
-$ echo DATABASE_URL=postgresql://twosnakes:twosnakes@localhost/twosnakes_development >> .env
 ```
 
 ## 4. Run the server
