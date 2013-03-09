@@ -2,7 +2,7 @@
 
 Coordinates game play, orchestrates persistent shared world
 
-## 1. Java, Scala & SBT
+## 1. Platform & build environment
 
 Written in [Scala](http://www.scala-lang.org/). **Version 2.10.x**
 
