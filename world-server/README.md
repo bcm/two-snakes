@@ -1,6 +1,6 @@
 # World Server
 
-Coordinates game play, orchestrates persistent shared world
+Coordinates game play and orchestrates the persistent shared world
 
 ## 1. Platform & build environment
 

@@ -16,7 +16,7 @@ $ brew install node
 $ curl https://npmjs.org/install.sh | sh
 ```
 
-CSS code written using the [SCSS syntax](http://sass-lang.com/). Compiling SCSS code requires [Ruby](http://www.ruby-lang.org/en/) and the [Compass](http://compass-style.org/) framework. These packages are installed via the [main project instructions](../).
+CSS code is written using the [SCSS syntax](http://sass-lang.com/). Compiling SCSS code requires [Ruby](http://www.ruby-lang.org/en/) and the [Compass](http://compass-style.org/) framework. These packages are installed via the [main project instructions](../).
 
 ### NPM dependencies
 
