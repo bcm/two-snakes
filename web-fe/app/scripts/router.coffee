@@ -17,10 +17,11 @@ define [
         @gameView.render()
 
       this.route 'logout', 'logout', =>
-        @app.endSession()
-        @gameView.remove() if @gameView
-        this.navigate('', replace: true)
-        location.reload()
+        this.listenTo @app.sessionManager, 'session:end:success', =>
+          @gameView.remove() if @gameView
+          this.navigate('', replace: true)
+          location.reload()
+        @app.sessionManager.endSession()
 
       Backbone.history.start()
 
@@ -36,7 +37,7 @@ define [
 
     # Execute the given function only if the app has an established session. Otherwise force the player to log in.
     withSession: (func) =>
-      if @app.session
+      if @app.sessionManager.session?
         func() if func?
       else
         # don't trigger the default route because it causes the browser to enter an endless loop for some reason I

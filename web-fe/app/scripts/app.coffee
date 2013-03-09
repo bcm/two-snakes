@@ -4,30 +4,17 @@ define [
   'backbone',
   'router',
   'world_server',
-  'session',
+  'session_manager',
   'bootstrap',
   'backbone_jsend'
-], ($, _, Backbone, Router, WorldServer, Session) ->
+], ($, _, Backbone, Router, WorldServer, SessionManager) ->
   'use strict'
 
   class TwoSnakes
     constructor: ->
-      this.resumeSession()
+      @sessionManager = new SessionManager
+      @sessionManager.resumeSession()
       @router = new Router(this)
 
     connectToWorldServer: =>
       @server = new WorldServer
-
-    startSession: (token) =>
-      @session = new Session(token)
-      localStorage.setItem('twosnakes.session.token', @session.token)
-
-    resumeSession: =>
-      token = localStorage.getItem('twosnakes.session.token')
-      @session = new Session(token) if token?
-
-    endSession: =>
-      @session.destroy()
-      @session = null
-      localStorage.removeItem('twosnakes.session.token')
-      console.log 'session ended'

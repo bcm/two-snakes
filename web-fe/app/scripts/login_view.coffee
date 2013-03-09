@@ -2,9 +2,8 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'credentials',
   'alert_view'
-], ($, _, Backbone, Credentials, AlertView) ->
+], ($, _, Backbone, AlertView) ->
   'use strict'
 
   class LoginView extends Backbone.View
@@ -26,28 +25,27 @@ define [
         'submit form': 'logIn'
       }
 
+      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithGameView
+      this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
+
     render: =>
       @$el.html(_.template(LoginView._TEMPLATE, {}))
       this
 
     logIn: =>
-      credentials = new Credentials
-
-      this.listenTo credentials, 'request', =>
-        @alertView.close() if @alertView?
-
-      this.listenTo credentials, 'loginSuccess', (token) =>
-        @app.startSession(token)
-        this.remove()
-        @app.router.navigate('game', trigger: true, replace: true)
-
-      this.listenTo credentials, 'loginFailure', =>
-        @alertView = new AlertView(@$el, "Login failed", level: 'error')
-        @alertView.render()
-
-      credentials.save {
-        email: @$el.find('#email').val(),
-        password: @$el.find('#password').val()
-      }
-
+      this.clearAlert()
+      @app.sessionManager.startSession(@$el.find('#email').val(), @$el.find('#password').val())
       false
+
+    replaceWithGameView: =>
+      this.remove()
+      @app.router.navigate('game', trigger: true, replace: true)
+
+    showLoginFailedAlert: =>
+      this.clearAlert()
+      @alertView = new AlertView(@$el, "Login failed", level: 'error')
+      @alertView.render()
+
+    clearAlert: =>
+      @alertView.close() if @alertView?
+      @alertView = null

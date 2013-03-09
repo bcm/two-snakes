@@ -5,9 +5,23 @@ define [
 ], ($, _, Backbone) ->
   'use strict'
 
-  # XXX: unify Session and Credentials so that destroying a session calls the logout api
-
   class Session extends Backbone.Model
-    constructor: (@token) ->
+    @resume: =>
+      token = localStorage.getItem('twosnakes.session.token')
+      new Session(id: token) if token?
 
-    sync: =>
+    url: => 'http://localhost:5000/session'
+
+    save: (attributes = {}, options = {}) =>
+      this.on 'sync:success', (data) =>
+        this.set('id', data.token)
+        localStorage.setItem('twosnakes.session.token', data.token)
+      super(attributes, options)
+
+    destroy: (options = {}) =>
+      options.headers = {
+        'Authorization': "Token token=\"#{this.get('id')}\""
+      }
+      this.on 'sync:success', (data) =>
+        localStorage.removeItem('twosnakes.session.token')
+      super(options)
