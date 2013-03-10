@@ -2,9 +2,9 @@ class SessionsController < ApplicationController
   skip_before_filter :require_login, only: :create
 
   def create
-    if user = login(params[:email], params[:password])
-      user.reset_session_token
-      render(json: {status: 'success', data: {token: user.session_token}})
+    if player = login(params[:email], params[:password])
+      player.reset_session_token
+      render(json: {status: 'success', data: {token: player.session_token}})
     else
       request_http_token_authentication("Two Snakes", message: "Authentication failed")
     end
