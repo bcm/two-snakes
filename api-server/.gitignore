@@ -4,4 +4,4 @@ log/*.log
 tmp/*
 tmp/**/*
 .DS_Store
-.env
+.env*

@@ -14,3 +14,11 @@ group :development do
   gem 'awesome_print', '~> 1.1.0'
   gem 'foreman', '~> 0.61.0'
 end
+
+group :development, :test do
+  gem 'database_cleaner', '~> 0.9.1'
+  gem 'dotenv', '~> 0.5.0'
+  gem 'fabrication', '~> 2.6.2'
+  gem 'faker', '~> 1.1.2'
+  gem 'rspec-rails', '~> 2.13.0'
+end

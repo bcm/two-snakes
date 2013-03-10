@@ -19,25 +19,41 @@ $ bundle
 
 Configuration items specific to the host environment are configured in the `.env` file. This file is read when the server starts up and its contents are made available to the server process as environment variables. The file is ignored by git and must be created by hand.
 
-### 2.1 Development environment
+A similar file named `.env.test` is used for the test environment.
+
+### Development environment
 
 ```sh
 $ echo RACK_ENV=development >> .env
+```
+
+### Test environment
+
+```sh
+$ echo RACK_ENV=test >> .env.test
 ```
 
 ## 3. Database
 
 Data is stored in [PostgreSQL](http://www.postgresql.org/).
 
-### 3.1 Database Connection
+### 3.1 Database connection
 
 Database connection information is taken from the `DATABASE_URL` environment variable in the `.env` file.
+
+#### Development environment
 
 ```sh
 $ echo DATABASE_URL=postgresql://twosnakes:twosnakes@localhost/twosnakes_development >> .env
 ```
 
-### 3.2 Database Setup
+#### Test environment
+
+```sh
+$ echo DATABASE_URL=postgresql://twosnakes:twosnakes@localhost/twosnakes_test >> .env.test
+```
+
+### 3.2 Database setup
 
 Use these commands to set up the database in Postgres:
 
@@ -48,7 +64,7 @@ Enter password for new role: twosnakes
 Enter it again: twosnakes
 ```
 
-### 3.3 Database Migration
+### 3.3 Database migration
 
 Use these commands to create and migrate the database:
 
@@ -60,7 +76,21 @@ $ rake db:create
 $ rake db:migrate
 ```
 
-## 4. Run the server
+## 4. Run the tests
+
+Tests are run using the [RSpec](https://www.relishapp.com/rspec) framework.
+
+```sh
+$ rake spec
+..................
+
+Finished in 2.2 seconds
+18 examples, 0 failures
+
+Randomized with seed 45111
+```
+
+## 5. Run the server
 
 The server runs on port 5000 using the [Thin](http://code.macournoyer.com/thin/) web server. [Foreman](https://github.com/ddollar/foreman) is used to run the server process.
 
