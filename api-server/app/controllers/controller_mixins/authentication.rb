@@ -21,7 +21,7 @@ module ControllerMixins
       # overrides the HttpAuthentication::Token method to render a json response
       def request_http_token_authentication(realm, options = {})
         headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
-        render(json: {status: 'error', code: 401, message: options.fetch(:message, 'Authentication required')})
+        render_jsend(error: options.fetch(:message, 'Authentication required'), code: 401)
       end
 
       # override the Sorcery method to short circuit other login source attempts

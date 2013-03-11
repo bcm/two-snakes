@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   def create
     if player = login(params[:email], params[:password])
       player.reset_session_token
-      render(json: {status: 'success', data: {token: player.session_token}})
+      render_jsend(success: {token: player.session_token})
     else
       request_http_token_authentication("Two Snakes", message: "Authentication failed")
     end
@@ -13,6 +13,6 @@ class SessionsController < ApplicationController
   def destroy
     logout
     current_player.clear_session_token
-    render(json: {status: 'success', data: nil})
+    render_jsend(:success)
   end
 end
