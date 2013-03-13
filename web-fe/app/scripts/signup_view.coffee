@@ -1,8 +1,9 @@
 define [
   'jquery',
   'underscore',
-  'backbone'
-], ($, _, Backbone) ->
+  'backbone',
+  'player'
+], ($, _, Backbone, Player) ->
   'use strict'
 
   class SignupView extends Backbone.View
@@ -44,6 +45,10 @@ define [
 </div>
 """
 
+    @_ERROR_TEMPLATE = """
+<span class="help-inline"><%= message %></span>
+"""
+
     constructor: (@app) ->
       @$el = $('#signup')
 
@@ -58,5 +63,25 @@ define [
       this
 
     signUp: =>
-      # XXX: validate the form, then submit the signup request
+      this.clearModalErrors()
+      player = new Player(
+        email: @$el.find('#signup-email').val(),
+        password: @$el.find('#signup-password').val(),
+        passwordConfirmation: @$el.find('#signup-password-confirmation').val()
+      )
+      player.on 'invalid', (model, errors) =>
+        this.showModalErrors(errors)
+      player.save()
       false
+
+    showModalErrors: (errors) =>
+      this.showModalError(field, message) for own field, message of errors
+
+    showModalError: (field, message) =>
+      $input = @$modal.find("#signup-#{field}")
+      $input.closest('.control-group').addClass('error')
+      $input.closest('.controls').append(_.template(SignupView._ERROR_TEMPLATE, {message: message}))
+
+    clearModalErrors: =>
+      @$modal.find('.error').removeClass('error')
+      @$modal.find('.help-inline').remove()
