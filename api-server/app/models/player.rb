@@ -5,7 +5,7 @@ class Player < ActiveRecord::Base
 
   attr_accessible :email, :password, :password_confirmation
   validates :email, presence: true, length: {minimum: 3, maximum: 255, allow_blank: true}
-  validates :password, presence: true, length: {minimum: 3, maximum: 255, allow_blank: true},
+  validates :password, presence: true, length: {minimum: 3, maximum: 128, allow_blank: true},
             confirmation: {allow_blank: true}, on: :create
   validates :password_confirmation, presence: true, on: :create
 
