@@ -2,8 +2,9 @@ define [
   'jquery',
   'underscore',
   'backbone',
+  'alert_view',
   'account_nav_view'
-], ($, _, Backbone, AccountNavView) ->
+], ($, _, Backbone, AlertView, AccountNavView) ->
   'use strict'
 
   class GameView extends Backbone.View
@@ -33,6 +34,16 @@ define [
       this.listenTo @app.server, 'message:echo', (message) =>
         @output.append("<li>#{message.get('text')}</li>")
 
+    showAlert: (message, options = {}) =>
+      this.clearAlert()
+      @alertView = new AlertView(@$el, message, options)
+      @alertView.render()
+
+    clearAlert: =>
+      @alertView.close() if @alertView?
+      @alertView = null
+
     remove: =>
-      @accountNavView.remove() if @accountNavView
+      @alertView.remove() if @alertView?
+      @accountNavView.remove() if @accountNavView?
       super()

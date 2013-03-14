@@ -17,22 +17,24 @@ define [
     <div class="modal-body">
       <fieldset>
         <div class="control-group">
-          <label class="control-label" for="signup-email">E-mail</label>
+          <label class="control-label" for="signup_email">E-mail</label>
           <div class="controls">
-            <input id="signup-email" type="email" class="input-xlarge" placeholder="me@example.com" maxlength="255"
+            <input id="signup_email" name="signup[email]" type="email" class="input-xlarge" placeholder="me@example.com"
+                   maxlength="255" required>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="signup_password">Password</label>
+          <div class="controls">
+            <input id="signup_password" name="signup[password]" type="password" class="input-xlarge" maxlength="128"
                    required>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="signup-password">Password</label>
+          <label class="control-label" for="signup_password-confirmation">Password (again)</label>
           <div class="controls">
-            <input id="signup-password" type="password" class="input-xlarge" maxlength="128" required>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="signup-password-confirmation">Password (again)</label>
-          <div class="controls">
-            <input id="signup-password-confirmation" type="password" class="input-xlarge" maxlength="128" required>
+            <input id="signup_password_confirmation" name="signup[password_confirmation]" type="password"
+                   class="input-xlarge" maxlength="128" required>
           </div>
         </div>
       </fieldset>
@@ -49,7 +51,7 @@ define [
 <span class="help-inline"><%= message %></span>
 """
 
-    constructor: (@app) ->
+    constructor: (@app, @loginView) ->
       @$el = $('#signup')
 
       this.delegateEvents {
@@ -65,10 +67,17 @@ define [
     signUp: =>
       this.clearModalErrors()
       player = new Player(
-        email: @$el.find('#signup-email').val(),
-        password: @$el.find('#signup-password').val(),
-        passwordConfirmation: @$el.find('#signup-password-confirmation').val()
+        email: @$el.find('#signup_email').val(),
+        password: @$el.find('#signup_password').val(),
+        password_confirmation: @$el.find('#signup_password_confirmation').val()
       )
+      player.once 'sync:success', (player) =>
+        this.app.sessionManager.initSession(player.session_token)
+        @loginView.replaceWithGameView()
+        this.app.router.gameView.showAlert("Welcome #{player.email}!", fade: true)
+        this.remove()
+      player.once 'sync:failure', (errors) =>
+        this.showModalErrors(errors)
       player.on 'invalid', (model, errors) =>
         this.showModalErrors(errors)
       player.save()
@@ -78,10 +87,14 @@ define [
       this.showModalError(field, message) for own field, message of errors
 
     showModalError: (field, message) =>
-      $input = @$modal.find("#signup-#{field}")
+      $input = @$modal.find("#signup_#{field}")
       $input.closest('.control-group').addClass('error')
       $input.closest('.controls').append(_.template(SignupView._ERROR_TEMPLATE, {message: message}))
 
     clearModalErrors: =>
       @$modal.find('.error').removeClass('error')
       @$modal.find('.help-inline').remove()
+
+    remove: =>
+      @$modal.modal('hide') if @$modal?
+      super()

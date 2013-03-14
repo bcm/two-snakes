@@ -19,6 +19,9 @@ define [
         this.trigger 'session:start:failure'
       session.save()
 
+    initSession: (token) =>
+      @session = Session.init(token)
+
     resumeSession: =>
       session = Session.resume()
       if session?

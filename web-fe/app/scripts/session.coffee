@@ -6,6 +6,10 @@ define [
   'use strict'
 
   class Session extends Backbone.Model
+    @init: (token) =>
+      localStorage.setItem('twosnakes.session.token', token)
+      new Session(id: token)
+
     @resume: =>
       token = localStorage.getItem('twosnakes.session.token')
       new Session(id: token) if token?

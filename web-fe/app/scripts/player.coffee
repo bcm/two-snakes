@@ -6,7 +6,7 @@ define [
   'use strict'
 
   class Player extends Backbone.Model
-    urlRoot: => 'http://localhost:5000/session/players'
+    urlRoot: => 'http://localhost:5000/players'
 
     validate: (attributes, options) =>
       # XXX: add client-side validation

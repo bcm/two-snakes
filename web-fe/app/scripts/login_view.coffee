@@ -48,7 +48,7 @@ define [
       false
 
     showSignupView: =>
-      @signupView ?= new SignupView(@app)
+      @signupView ?= new SignupView(@app, this)
       @signupView.render()
 
     replaceWithGameView: =>
@@ -63,3 +63,8 @@ define [
     clearAlert: =>
       @alertView.close() if @alertView?
       @alertView = null
+
+    remove: =>
+      @alertView.remove() if @alertView?
+      @signupView.remove() if @signupView?
+      super()

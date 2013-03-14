@@ -11,6 +11,7 @@ define [
       else if jsend.status is 'fail'
         model.trigger 'sync:failure', jsend.data
       else if jsend.status is 'error'
+        console.log "server error (#{jsend.code}): #{jsend.message}"
         model.trigger 'sync:error', jsend.code, jsend.message
     options.error = (model, xhr, options) =>
       console.log "ajax error: #{xhr.responseText}"

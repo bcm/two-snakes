@@ -14,11 +14,13 @@ define [
 """
 
     constructor: (@$el, @message, options = {}) ->
-      @level = options.level
+      @level = options.level or 'success'
+      @fade = options.fade or false
 
     render: =>
       @$alert = $(_.template(AlertView._TEMPLATE, {message: @message}))
-      @$alert.addClass("alert-#{@level}") if @level?
+      @$alert.addClass("alert-#{@level}")
+      @$alert.delay(5000).fadeOut('slow') if @fade
       @$alert.on 'closed', =>
         $(this).remove()
       @$el.prepend(@$alert)
