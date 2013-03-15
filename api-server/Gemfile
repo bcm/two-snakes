@@ -2,7 +2,8 @@ source 'https://rubygems.org'
 
 ruby '2.0.0'
 
-gem "active_model_serializers", "~> 0.7.0"
+gem 'active_model_serializers', '~> 0.7.0'
+gem 'attribute_normalizer', '~> 1.1.0'
 gem 'bcrypt-ruby', '~> 3.0.0'
 gem 'jsend-rails', '~> 1.1.0'
 gem 'pg', '~> 0.14.1'
