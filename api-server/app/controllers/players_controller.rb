@@ -5,8 +5,7 @@ class PlayersController < ApplicationController
     player = Player.new(player_params)
     if player.save
       player.reset_session_token # log the player in
-      # XXX: use AS::Serializers
-      render_jsend(success: player.attributes)
+      render_jsend(success: PlayerSerializer.new(player).serializable_hash)
     else
       render_jsend(fail: player.errors)
     end
