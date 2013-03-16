@@ -4,6 +4,7 @@
   "dependencies": {
     "sass-bootstrap": "~2.3.0",
     "requirejs": "~2.1.4",
+    "requirejs-text": "~2.0.5",
     "modernizr": "~2.6.2",
     "jquery": "~1.9.1",
     "json2": "",

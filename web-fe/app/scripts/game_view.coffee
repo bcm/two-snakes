@@ -2,23 +2,19 @@ define [
   'jquery',
   'underscore',
   'backbone',
+  'text!../game.html',
   'alert_view',
   'account_nav_view'
-], ($, _, Backbone, AlertView, AccountNavView) ->
+], ($, _, Backbone, GameTemplate, AlertView, AccountNavView) ->
   'use strict'
 
   class GameView extends Backbone.View
-    @_TEMPLATE = """
-<input type="text" name="message" placeholder="type a message and press Enter" class='input-xxlarge'/>
-<h3>Output</h3>
-<ul id="output" class="unstyled"></ul>
-"""
     constructor: (@app) ->
       @app.connectToWorldServer()
       @$el = $('#game')
 
     render: =>
-      @$el.html(GameView._TEMPLATE)
+      @$el.html(GameTemplate)
 
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()

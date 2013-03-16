@@ -1,8 +1,9 @@
 define [
   'jquery',
   'underscore',
-  'backbone'
-], ($, _, Backbone) ->
+  'backbone',
+  'text!../alert.html'
+], ($, _, Backbone, AlertTemplate) ->
   'use strict'
 
   class AlertView extends Backbone.View
@@ -17,7 +18,7 @@ define [
       @fade = options.fade or false
 
     render: =>
-      @$alert = $(AlertView._TEMPLATE)
+      @$alert = $(AlertTemplate)
       @$alert.append(@message)
       @$alert.addClass("alert-#{@level}")
       @$alert.delay(5000).fadeOut('slow') if @fade

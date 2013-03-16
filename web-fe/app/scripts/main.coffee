@@ -6,7 +6,8 @@ require.config {
     backbone: '../components/backbone/backbone',
     modernizr: '../components/modernizr/modernizr',
     bootstrap: 'vendor/bootstrap',
-    jquery_websocket: 'vendor/jquery.websocket'
+    jquery_websocket: 'vendor/jquery.websocket',
+    text: '../components/requirejs-text/text'
   },
   shim: {
     bootstrap: {

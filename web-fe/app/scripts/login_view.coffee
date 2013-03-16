@@ -2,26 +2,13 @@ define [
   'jquery',
   'underscore',
   'backbone',
+  'text!../login.html',
   'alert_view',
   'signup_view'
-], ($, _, Backbone, AlertView, SignupView) ->
+], ($, _, Backbone, LoginTemplate, AlertView, SignupView) ->
   'use strict'
 
   class LoginView extends Backbone.View
-    @_TEMPLATE = """
-<div class="alert alert-block" style="display:none">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
-</div>
-<form id="login-form" class="form-inline">
-  <input id="email" type="email" class="input-large" placeholder="E-mail">
-  <input id="password" type="password" class="input-large" placeholder="Password">
-  <button type="submit" class="btn">Log in</button>
-  or
-  <button data-button="signup" class="btn">Sign up</button>
-</form>
-<div id="signup"></div>
-"""
-
     constructor: (@app) ->
       @$el = $('#login')
 
@@ -34,7 +21,7 @@ define [
       this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
 
     render: =>
-      @$el.html(LoginView._TEMPLATE)
+      @$el.html(LoginTemplate)
       this
 
     logIn: =>
