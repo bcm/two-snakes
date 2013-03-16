@@ -51,6 +51,6 @@ define [
     remove: =>
       @alertView.remove() if @alertView?
       @signupView.remove() if @signupView?
-      @$el.html()
+      @$el.html('')
       this.stopListening()
       this
