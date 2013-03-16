@@ -48,7 +48,7 @@ define [
 """
 
     @_ERROR_TEMPLATE = """
-<span class="help-inline"><%= message %></span>
+<span class="help-inline"></span>
 """
 
     constructor: (@app, @loginView) ->
@@ -59,7 +59,7 @@ define [
       }
 
     render: =>
-      @$el.html(_.template(SignupView._TEMPLATE, {})) if @$el.is(':empty')
+      @$el.html(SignupView._TEMPLATE) if @$el.is(':empty')
       @$modal ?= @$el.find('.modal')
       @$modal.modal('show')
       this
@@ -89,7 +89,9 @@ define [
     showModalError: (field, message) =>
       $input = @$modal.find("#signup_#{field}")
       $input.closest('.control-group').addClass('error')
-      $input.closest('.controls').append(_.template(SignupView._ERROR_TEMPLATE, {message: message}))
+      $error = $(SignupView._ERROR_TEMPLATE)
+      $error.text(message)
+      $input.closest('.controls').append($error)
 
     clearModalErrors: =>
       @$modal.find('.error').removeClass('error')

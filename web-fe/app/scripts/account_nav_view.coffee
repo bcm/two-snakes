@@ -16,5 +16,5 @@ define [
       @$el = $('#account-nav')
 
     render: =>
-      @$el.html(_.template(AccountNavView._TEMPLATE, {}))
+      @$el.html(AccountNavView._TEMPLATE)
       this

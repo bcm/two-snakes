@@ -34,7 +34,7 @@ define [
       this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
 
     render: =>
-      @$el.html(_.template(LoginView._TEMPLATE, {}))
+      @$el.html(LoginView._TEMPLATE)
       this
 
     logIn: =>

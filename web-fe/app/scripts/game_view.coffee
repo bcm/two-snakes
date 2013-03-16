@@ -18,7 +18,7 @@ define [
       @$el = $('#game')
 
     render: =>
-      @$el.html(_.template(GameView._TEMPLATE, {}))
+      @$el.html(GameView._TEMPLATE)
 
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()

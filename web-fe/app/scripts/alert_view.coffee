@@ -9,7 +9,6 @@ define [
     @_TEMPLATE = """
 <div class="alert alert-block">
   <button type="button" class="close" data-dismiss="alert">&times;</button>
-  <%= message %>
 </div>
 """
 
@@ -18,7 +17,8 @@ define [
       @fade = options.fade or false
 
     render: =>
-      @$alert = $(_.template(AlertView._TEMPLATE, {message: @message}))
+      @$alert = $(AlertView._TEMPLATE)
+      @$alert.append(@message)
       @$alert.addClass("alert-#{@level}")
       @$alert.delay(5000).fadeOut('slow') if @fade
       @$alert.on 'closed', =>
