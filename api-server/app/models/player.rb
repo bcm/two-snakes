@@ -12,6 +12,8 @@ class Player < ActiveRecord::Base
             confirmation: {allow_blank: true}, on: :create
   validates :password_confirmation, presence: true, on: :create
 
+  has_many :characters
+
   def reset_session_token
     token = self.class.generate_session_token
     update_attributes!({session_token: token}, without_protection: true, validate: false)
@@ -21,6 +23,14 @@ class Player < ActiveRecord::Base
   def clear_session_token
     update_attributes!({session_token: nil}, without_protection: true, validate: false)
     nil
+  end
+
+  def build_character(attributes = {})
+    characters.build(attributes)
+  end
+
+  def find_characters
+    characters.order('LOWER(name) ASC')
   end
 
   def self.authenticate_with_token(token)

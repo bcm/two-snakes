@@ -29,6 +29,38 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: characters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE characters (
+    id integer NOT NULL,
+    name character varying(32) NOT NULL,
+    player_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: characters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE characters_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: characters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE characters_id_seq OWNED BY characters.id;
+
+
+--
 -- Name: players; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -75,7 +107,22 @@ CREATE TABLE schema_migrations (
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY characters ALTER COLUMN id SET DEFAULT nextval('characters_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY players ALTER COLUMN id SET DEFAULT nextval('players_id_seq'::regclass);
+
+
+--
+-- Name: characters_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY characters
+    ADD CONSTRAINT characters_pkey PRIMARY KEY (id);
 
 
 --
@@ -84,6 +131,27 @@ ALTER TABLE ONLY players ALTER COLUMN id SET DEFAULT nextval('players_id_seq'::r
 
 ALTER TABLE ONLY players
     ADD CONSTRAINT players_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: characters_name_lower_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX characters_name_lower_index ON characters USING btree (lower((name)::text));
+
+
+--
+-- Name: index_characters_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_characters_on_name ON characters USING btree (name);
+
+
+--
+-- Name: index_characters_on_player_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_characters_on_player_id ON characters USING btree (player_id);
 
 
 --
@@ -123,3 +191,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130306153554');
 INSERT INTO schema_migrations (version) VALUES ('20130307144910');
 
 INSERT INTO schema_migrations (version) VALUES ('20130307150841');
+
+INSERT INTO schema_migrations (version) VALUES ('20130316185622');

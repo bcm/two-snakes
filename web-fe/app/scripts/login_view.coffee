@@ -14,10 +14,10 @@ define [
 
       this.delegateEvents {
         'submit #login-form': 'logIn',
-        'click [data-button=signup]': 'signUp'
+        'click [data-button=signup]': 'showSignUpView'
       }
 
-      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithGameView
+      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithCharacterView
       this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
 
     render: =>
@@ -29,18 +29,15 @@ define [
       @app.sessionManager.startSession(@$el.find('#email').val(), @$el.find('#password').val())
       false
 
-    signUp: =>
+    showSignUpView: =>
       this.clearAlert()
-      this.showSignupView()
-      false
-
-    showSignupView: =>
       @signupView ?= new SignupView(@app, this)
       @signupView.render()
+      false
 
-    replaceWithGameView: =>
+    replaceWithCharacterView: =>
       this.remove()
-      @app.router.navigate('game', trigger: true, replace: true)
+      @app.router.navigate('characters', trigger: true, replace: true)
 
     showLoginFailedAlert: =>
       this.clearAlert()
@@ -54,4 +51,6 @@ define [
     remove: =>
       @alertView.remove() if @alertView?
       @signupView.remove() if @signupView?
-      super()
+      @$el.html()
+      this.stopListening()
+      this

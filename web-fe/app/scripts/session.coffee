@@ -1,11 +1,13 @@
 define [
   'jquery',
   'underscore',
-  'backbone'
-], ($, _, Backbone) ->
+  'backbone',
+  'model'
+], ($, _, Backbone, Model) ->
   'use strict'
 
-  class Session extends Backbone.Model
+  # XXX: get player back from server and store it locally, instead of just token
+  class Session extends Model
     @init: (token) =>
       localStorage.setItem('twosnakes.session.token', token)
       new Session(id: token)
@@ -23,9 +25,7 @@ define [
       super(attributes, options)
 
     destroy: (options = {}) =>
-      options.headers = {
-        'Authorization': "Token token=\"#{this.get('id')}\""
-      }
+      options.session = this
       this.on 'sync:success', (data) =>
         localStorage.removeItem('twosnakes.session.token')
       super(options)

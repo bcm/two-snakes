@@ -22,7 +22,8 @@ define [
       @$modal.modal('show')
       this
 
-    signUp: =>
+    signUp: (e) =>
+      e.preventDefault()
       this.clearModalErrors()
       player = new Player(
         email: @$el.find('#signup_email').val(),
@@ -31,9 +32,8 @@ define [
       )
       player.once 'sync:success', (player) =>
         this.app.sessionManager.initSession(player.session_token)
-        @loginView.replaceWithGameView()
-        this.app.router.gameView.showAlert("Welcome #{player.email}!", fade: true)
-        this.remove()
+        @loginView.replaceWithCharacterView()
+        this.app.router.characterView.showAlert("Welcome #{player.email}!", fade: true)
       player.once 'sync:failure', (errors) =>
         this.showModalErrors(errors)
       player.on 'invalid', (model, errors) =>

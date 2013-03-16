@@ -18,3 +18,6 @@ define [
 
     connectToWorldServer: =>
       @server = new WorldServer
+
+    disconnectFromWorldServer: =>
+      @server.disconnect()

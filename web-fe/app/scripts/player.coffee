@@ -5,6 +5,7 @@ define [
 ], ($, _, Backbone) ->
   'use strict'
 
+  # XXX: attach characters collection
   class Player extends Backbone.Model
     urlRoot: => 'http://localhost:5000/players'
 

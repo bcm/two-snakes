@@ -29,3 +29,7 @@ define [
 
     close: =>
       @$alert.alert('close') if @$alert?
+
+    remove: =>
+      # don't remove from dom or stop listening because @$el is borrowed from the parent view
+      this

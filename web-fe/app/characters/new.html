@@ -1,0 +1,22 @@
+<div class="modal hide" tabindex="-1" role="dialog" aria-labelledby="character-new-label" aria-hidden="true">
+  <form id="character-new-form">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="character-new-label">New character</h3>
+    </div>
+    <div class="modal-body">
+      <fieldset>
+        <div class="control-group">
+          <label class="control-label" for="character_name">Name</label>
+          <div class="controls">
+            <input id="character_name" name="character[name]" type="name" class="input-xlarge" maxlength="255" required>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary">Create</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+  </form>
+</div>

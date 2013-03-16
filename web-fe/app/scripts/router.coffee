@@ -3,20 +3,30 @@ define [
   'underscore',
   'backbone',
   'login_view',
+  'characters/selector_view',
   'game_view'
-], ($, _, Backbone, LoginView, GameView) ->
+], ($, _, Backbone, LoginView, CharacterSelectorView, GameView) ->
   'use strict'
 
   class Router extends Backbone.Router
     constructor: (@app) ->
       this.route '*anything', 'default', =>
+        # XXX: if no character stored in the session, go to characters
         this.navigate('play', trigger: true, replace: true)
+
+      this.route 'characters', 'characters', =>
+        @characterSelectorView ?= new CharacterSelectorView(@app)
+        @characterSelectorView.render()
 
       this.route 'play', 'play', =>
         @gameView ?= new GameView(@app)
         @gameView.render()
 
       this.route 'logout', 'logout', =>
+        @gameView.remove() if @gameView?
+        this.navigate('characters', trigger: true, replace: true)
+
+      this.route 'quit', 'quit', =>
         this.listenTo @app.sessionManager, 'session:end:success', =>
           @gameView.remove() if @gameView
           this.navigate('', replace: true)

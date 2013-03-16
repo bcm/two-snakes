@@ -10,11 +10,11 @@ define [
 
   class GameView extends Backbone.View
     constructor: (@app) ->
-      @app.connectToWorldServer()
       @$el = $('#game')
 
     render: =>
       @$el.html(GameTemplate)
+      @app.connectToWorldServer()
 
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()
@@ -26,8 +26,9 @@ define [
         @app.server.sendMessage(@app.server.createMessage({type: 'echo', text: @input.val()}))
         @input.val('')
 
+      # use on instead of listenTo so the handlers don't get wiped out when the view is removed
       # XXX: should probably be a sub-view
-      this.listenTo @app.server, 'message:echo', (message) =>
+      @app.server. on 'message:echo', (message) =>
         @output.append("<li>#{message.get('text')}</li>")
 
     showAlert: (message, options = {}) =>
@@ -42,4 +43,7 @@ define [
     remove: =>
       @alertView.remove() if @alertView?
       @accountNavView.remove() if @accountNavView?
-      super()
+      @app.disconnectFromWorldServer()
+      @$el.html('')
+      this.stopListening()
+      this
