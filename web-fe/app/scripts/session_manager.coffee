@@ -2,8 +2,9 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'session'
-], ($, _, Backbone, Session) ->
+  'session',
+  'player'
+], ($, _, Backbone, Session, Player) ->
   'use strict'
 
   class SessionManager
@@ -12,19 +13,26 @@ define [
 
     startSession: (email, password) =>
       session = new Session(email: email, password: password)
-      session.once 'session:saved', (data) =>
+      session.once 'change', =>
+        localStorage.setItem('twosnakes.session.player', JSON.stringify(session.get('player')))
         @session = session
-        this.trigger 'session:start:success', session
+        this.trigger 'session:start:success', @session
       session.once 'sync:error', =>
         this.trigger 'session:start:failure'
       session.save()
 
-    initSession: (player) =>
-      @session = Session.init(player)
+    initSession: (playerAttrs) =>
+      localStorage.setItem('twosnakes.session.player', JSON.stringify(playerAttrs))
+      player = new Player(playerAttrs)
+      @session = new Session(id: player.get('session_token'), player: player)
 
     resumeSession: =>
-      session = Session.resume()
-      if session?
+      playerAttrs = localStorage.getItem('twosnakes.session.player')
+      player = new Player(JSON.parse(playerAttrs)) if playerAttrs?
+      characterAttrs = localStorage.getItem('twosnakes.session.character')
+      character = new Character(JSON.parse(characterAttrs)) if characterAttrs?
+      if player?
+        session = new Session(id: player.get('session_token'), player: player, character: character)
         this.trigger 'session:resume:success', session
         @session = session
       else
@@ -32,7 +40,8 @@ define [
         null
 
     endSession: =>
-      @session.once 'session:destroyed', (data) =>
+      @session.once 'sync', (data) =>
+        localStorage.removeItem('twosnakes.session.player')
         @session = null
         this.trigger 'session:end:success', @session
       @session.once 'sync:error', =>

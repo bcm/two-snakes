@@ -12,5 +12,5 @@ define [
       @model = Character
       @url = 'http://localhost:5000/characters'
 
-    parse: (response, options) =>
+    parse: (response, options = {}) =>
       response.characters

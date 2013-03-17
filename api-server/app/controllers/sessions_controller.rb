@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   def create
     if player = login(params[:email], params[:password])
       player.reset_session_token
-      render_jsend(success: {token: player.session_token})
+      render_jsend(success: PlayerSerializer.new(player).serializable_hash)
     else
       request_http_token_authentication("Two Snakes", message: "Authentication failed")
     end
