@@ -31,7 +31,7 @@ define [
         password_confirmation: @$el.find('#signup_password_confirmation').val()
       )
       player.once 'sync:success', (player) =>
-        this.app.sessionManager.initSession(player.session_token)
+        this.app.sessionManager.initSession(player)
         @loginView.replaceWithCharacterView()
         this.app.router.characterView.showAlert("Welcome #{player.email}!", fade: true)
       player.once 'sync:failure', (errors) =>

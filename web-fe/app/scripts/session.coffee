@@ -2,30 +2,41 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'model'
-], ($, _, Backbone, Model) ->
+  'model',
+  'player'
+], ($, _, Backbone, Model, Player) ->
   'use strict'
 
-  # XXX: get player back from server and store it locally, instead of just token
   class Session extends Model
-    @init: (token) =>
-      localStorage.setItem('twosnakes.session.token', token)
-      new Session(id: token)
+    @init: (playerAttrs) =>
+      localStorage.setItem('twosnakes.session.player', JSON.stringify(playerAttrs))
+      player = new Player(JSON.parse(playerAttrs))
+      new Session(id: player.get('session_token'), player: player)
 
     @resume: =>
-      token = localStorage.getItem('twosnakes.session.token')
-      new Session(id: token) if token?
+      playerAttrs = localStorage.getItem('twosnakes.session.player')
+      player = new Player(JSON.parse(playerAttrs)) if playerAttrs?
+      characterAttrs = localStorage.getItem('twosnakes.session.character')
+      character = new Character(JSON.parse(characterAttrs)) if characterAttrs?
+      if player?
+        new Session(id: player.get('session_token'), player: player, character: character)
 
     url: => 'http://localhost:5000/session'
 
     save: (attributes = {}, options = {}) =>
       this.on 'sync:success', (data) =>
-        this.set('id', data.token)
-        localStorage.setItem('twosnakes.session.token', data.token)
+        # XXX: get player attributes from server
+        playerAttrs = {email: this.get('email'), session_token: data.token}
+        player = new Player(playerAttrs)
+        this.set('id', player.get('session_token'))
+        this.set('player', player)
+        localStorage.setItem('twosnakes.session.player', JSON.stringify(playerAttrs))
+        this.trigger("session:saved")
       super(attributes, options)
 
     destroy: (options = {}) =>
       options.session = this
       this.on 'sync:success', (data) =>
-        localStorage.removeItem('twosnakes.session.token')
+        localStorage.removeItem('twosnakes.session.player')
+        this.trigger "session:destroyed"
       super(options)

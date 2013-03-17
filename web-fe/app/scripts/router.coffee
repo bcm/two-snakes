@@ -11,8 +11,11 @@ define [
   class Router extends Backbone.Router
     constructor: (@app) ->
       this.route '*anything', 'default', =>
-        # XXX: if no character stored in the session, go to characters
-        this.navigate('play', trigger: true, replace: true)
+        if @app.sessionManager.session? and @app.sessionManager.session.get('character')?
+          this.navigate('play', trigger: true, replace: true)
+        else
+          # will force login if there's no session
+          this.navigate('characters', trigger: true, replace: true)
 
       this.route 'characters', 'characters', =>
         @characterSelectorView ?= new CharacterSelectorView(@app)

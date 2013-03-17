@@ -25,18 +25,13 @@ define [
       @$el.html(CharactersTemplate)
       @$characters = @$el.find('#characters')
 
-      # XXX: get collection from session player
-      # XXX: fails on first load because session token is undefined
-      @characters ?= new CharacterCollection()
-      # use on instead of listenTo so the handlers don't get wiped out when the view is removed
-      @characters.on 'reset', (characters) =>
+      this.listenTo @app.sessionManager.session.get('player').get('characters'), 'reset', (characters) =>
         @$characters.html('')
         characters.each (character) =>
         # XXX: should probably be a sub-view
           @$characters.append("""<li id="character-#{character.id}">#{character.get('name')}</li>""")
         @$el.find('#enter').show()
-
-      @characters.fetch(session: @app.sessionManager.session)
+      @app.sessionManager.session.get('player').get('characters').fetch(session: @app.sessionManager.session)
 
     showNewCharacterView: (e) =>
       e.preventDefault()
@@ -46,8 +41,11 @@ define [
 
     enterWorld: (e) =>
       e.preventDefault()
-      selectedCharacter = @characters.at(0)
-      @app.sessionManager.character = selectedCharacter
+      # XXX implement character selection
+      # XXX ensure character selection is saved in local storage (attribute change event)
+      # XXX send enter world event to world server
+      selectedCharacter = @app.sessionManager.session.get('player').get('characters').at(0)
+      @app.sessionManager.session.set('character', selectedCharacter)
       this.replaceWithGameView()
       false
 

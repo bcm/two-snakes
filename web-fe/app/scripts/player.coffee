@@ -1,12 +1,17 @@
 define [
   'jquery',
   'underscore',
-  'backbone'
-], ($, _, Backbone) ->
+  'backbone',
+  'model',
+  'character_collection'
+], ($, _, Backbone, Model, CharacterCollection) ->
   'use strict'
 
-  # XXX: attach characters collection
-  class Player extends Backbone.Model
+  class Player extends Model
+    initialize: (attributes = {}, options = {}) ->
+      super(attributes, options)
+      this.set('characters', new CharacterCollection)
+
     urlRoot: => 'http://localhost:5000/players'
 
     validate: (attributes, options) =>

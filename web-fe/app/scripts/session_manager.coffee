@@ -12,15 +12,15 @@ define [
 
     startSession: (email, password) =>
       session = new Session(email: email, password: password)
-      session.once 'sync:success', (data) =>
+      session.once 'session:saved', (data) =>
         @session = session
         this.trigger 'session:start:success', session
       session.once 'sync:error', =>
         this.trigger 'session:start:failure'
       session.save()
 
-    initSession: (token) =>
-      @session = Session.init(token)
+    initSession: (player) =>
+      @session = Session.init(player)
 
     resumeSession: =>
       session = Session.resume()
@@ -32,7 +32,7 @@ define [
         null
 
     endSession: =>
-      @session.once 'sync:success', (data) =>
+      @session.once 'session:destroyed', (data) =>
         @session = null
         this.trigger 'session:end:success', @session
       @session.once 'sync:error', =>

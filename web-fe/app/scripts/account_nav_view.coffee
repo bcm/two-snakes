@@ -12,7 +12,7 @@ define [
 
     render: =>
       $tmpl = $(AccountNavTemplate)
-      if @app.sessionManager.character?
+      if @app.sessionManager.session.get('character')?
         $tmpl.find('#logout').parent().show()
       @$el.html($tmpl)
       this

@@ -27,8 +27,7 @@ define [
       this.clearModalErrors()
       character = new Character({
         name: @$el.find('#character_name').val(),
-      }, collection: @characterSelectorView.characters)
-      # XXX: get collection from session player
+      }, collection: @app.sessionManager.session.get('player').get('characters'))
       character.once 'sync:success', (character) =>
         this.remove()
         @characterSelectorView.render()
