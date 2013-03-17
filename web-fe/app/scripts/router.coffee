@@ -28,7 +28,8 @@ define [
 
       this.route 'quit', 'quit', =>
         this.listenTo @app.sessionManager, 'session:end:success', =>
-          @gameView.remove() if @gameView
+          @characterSelectorView.remove() if @characterSelectorView?
+          @gameView.remove() if @gameView?
           this.navigate('', replace: true)
           location.reload()
         @app.sessionManager.endSession()

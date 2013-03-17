@@ -9,7 +9,6 @@ define [
   class AccountNavView extends Backbone.View
     constructor: (@app) ->
       @$el = $('#account-nav')
-      # XXX: add quit option
       # XXX: only show log out option when game is in session (player exists)
 
     render: =>

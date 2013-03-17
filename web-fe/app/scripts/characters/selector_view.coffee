@@ -3,9 +3,10 @@ define [
   'underscore',
   'backbone',
   'text!../../../characters/selector.html',
+  'account_nav_view',
   'characters/new_view',
   'character_collection'
-], ($, _, Backbone, CharactersTemplate, NewCharacterView, CharacterCollection) ->
+], ($, _, Backbone, CharactersTemplate, AccountNavView, NewCharacterView, CharacterCollection) ->
   'use strict'
 
   class CharacterSelectorView extends Backbone.View
@@ -16,6 +17,9 @@ define [
         'click [data-button=character-new]': 'showNewCharacterView',
         'click [data-button=enter-world]': 'enterWorld'
       }
+
+      @accountNavView ?= new AccountNavView(@app)
+      @accountNavView.render()
 
     render: =>
       @$el.html(CharactersTemplate)
@@ -51,7 +55,8 @@ define [
       this.remove()
       @app.router.navigate('play', trigger: true, replace: true)
 
-    remove: =>
+    remove: =>  
+      @accountNavView.remove() if @accountNavView?
       @newCharacterView.remove() if @newCharacterView?
       @$el.html('')
       this.stopListening()
