@@ -9,10 +9,12 @@ define [
   class AccountNavView extends Backbone.View
     constructor: (@app) ->
       @$el = $('#account-nav')
-      # XXX: only show log out option when game is in session (player exists)
 
     render: =>
-      @$el.html(AccountNavTemplate)
+      $tmpl = $(AccountNavTemplate)
+      if @app.sessionManager.character?
+        $tmpl.find('#logout').parent().show()
+      @$el.html($tmpl)
       this
 
     remove: =>
