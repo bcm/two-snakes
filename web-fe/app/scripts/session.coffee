@@ -2,8 +2,9 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'model'
-], ($, _, Backbone, Model) ->
+  'model',
+  'player'
+], ($, _, Backbone, Model, Player) ->
   'use strict'
 
   class Session extends Model
@@ -11,4 +12,4 @@ define [
 
     parse: (response, options = {}) =>
       player = new Player(response)
-      {id: player.get('session_token'), player: player, email: null, password: null}
+      {id: player.get('sessionToken'), player: player, email: null, password: null}

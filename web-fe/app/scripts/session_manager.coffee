@@ -24,7 +24,7 @@ define [
     initSession: (playerAttrs) =>
       localStorage.setItem('twosnakes.session.player', JSON.stringify(playerAttrs))
       player = new Player(playerAttrs)
-      @session = new Session(id: player.get('session_token'), player: player)
+      @session = new Session(id: player.get('sessionToken'), player: player)
 
     resumeSession: =>
       playerAttrs = localStorage.getItem('twosnakes.session.player')
@@ -32,7 +32,7 @@ define [
       characterAttrs = localStorage.getItem('twosnakes.session.character')
       character = new Character(JSON.parse(characterAttrs)) if characterAttrs?
       if player?
-        session = new Session(id: player.get('session_token'), player: player, character: character)
+        session = new Session(id: player.get('sessionToken'), player: player, character: character)
         this.trigger 'session:resume:success', session
         @session = session
       else
