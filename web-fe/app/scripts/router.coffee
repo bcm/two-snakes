@@ -29,14 +29,6 @@ define [
         @gameView.remove() if @gameView?
         this.navigate('characters', trigger: true, replace: true)
 
-      this.route 'quit', 'quit', =>
-        this.listenTo @app.sessionManager, 'session:end:success', =>
-          @characterSelectorView.remove() if @characterSelectorView?
-          @gameView.remove() if @gameView?
-          this.navigate('', replace: true)
-          location.reload()
-        @app.sessionManager.endSession()
-
       Backbone.history.start()
 
     route: (route, name, callback) =>
@@ -56,6 +48,8 @@ define [
       else
         # don't trigger the default route because it causes the browser to enter an endless loop for some reason I
         # haven't figured out yet. just update the url and then render the login view.
+        @characterSelectorView.remove() if @characterSelectorView?
+        @gameView.remove() if @gameView?
         this.navigate('', replace: true)
         @loginView ?= new LoginView(@app)
         @loginView.render()

@@ -3,8 +3,9 @@ define [
   'underscore',
   'backbone',
   'session',
-  'player'
-], ($, _, Backbone, Session, Player) ->
+  'player',
+  'character'
+], ($, _, Backbone, Session, Player, Character) ->
   'use strict'
 
   class SessionManager
@@ -12,7 +13,7 @@ define [
       _.extend(this, Backbone.Events)
 
     startSession: (email, password) =>
-      session = new Session(email: email, password: password)
+      session = this._createSession(email: email, password: password)
       session.once 'change', =>
         localStorage.setItem('twosnakes.session.player', JSON.stringify(session.get('player')))
         @session = session
@@ -24,7 +25,7 @@ define [
     initSession: (playerAttrs) =>
       localStorage.setItem('twosnakes.session.player', JSON.stringify(playerAttrs))
       player = new Player(playerAttrs)
-      @session = new Session(id: player.get('sessionToken'), player: player)
+      @session = this._createSession(id: player.get('sessionToken'), player: player)
 
     resumeSession: =>
       playerAttrs = localStorage.getItem('twosnakes.session.player')
@@ -32,7 +33,7 @@ define [
       characterAttrs = localStorage.getItem('twosnakes.session.character')
       character = new Character(JSON.parse(characterAttrs)) if characterAttrs?
       if player?
-        session = new Session(id: player.get('sessionToken'), player: player, character: character)
+        session = this._createSession(id: player.get('sessionToken'), player: player, character: character)
         this.trigger 'session:resume:success', session
         @session = session
       else
@@ -42,8 +43,18 @@ define [
     endSession: =>
       @session.once 'sync', (data) =>
         localStorage.removeItem('twosnakes.session.player')
+        localStorage.removeItem('twosnakes.session.character')
         @session = null
         this.trigger 'session:end:success', @session
       @session.once 'sync:error', =>
         this.trigger 'session:end:failure'
       @session.destroy()
+
+    _createSession: (attrs) =>
+      session = new Session(attrs)
+      session.on 'change:character', (session, character) =>
+        if character?
+          localStorage.setItem('twosnakes.session.character', JSON.stringify(character))
+        else
+          localStorage.removeItem('twosnakes.session.character')
+      session

@@ -13,3 +13,7 @@ define [
     parse: (response, options = {}) =>
       player = new Player(response)
       {id: player.get('sessionToken'), player: player, email: null, password: null}
+
+    destroy: (options = {}) =>
+      options.session = this
+      super(options)

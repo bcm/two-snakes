@@ -42,7 +42,6 @@ define [
     enterWorld: (e) =>
       e.preventDefault()
       # XXX implement character selection
-      # XXX ensure character selection is saved in local storage (attribute change event)
       # XXX send enter world event to world server
       selectedCharacter = @app.sessionManager.session.get('player').get('characters').at(0)
       @app.sessionManager.session.set('character', selectedCharacter)
