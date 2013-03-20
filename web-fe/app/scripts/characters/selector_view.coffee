@@ -28,8 +28,17 @@ define [
       this.listenTo @app.sessionManager.session.get('player').get('characters'), 'reset', (characters) =>
         @$characters.html('')
         characters.each (character) =>
-        # XXX: should probably be a sub-view
-          @$characters.append("""<li id="character-#{character.id}">#{character.get('name')}</li>""")
+          # XXX: should probably be a sub-view
+          $char = $("""<li data-character="#{character.id}"><a>#{character.get('name')}</a></li>""")
+          $char.on 'click', =>
+            if $char.hasClass('active')
+              $char.removeClass('active')
+              $('[data-button=enter-world]').addClass('disabled')
+            else
+              @$characters.find('li[data-character]').removeClass('active')
+              $char.addClass('active')
+              $('[data-button=enter-world]').removeClass('disabled')
+          @$characters.append($char)
         @$el.find('#enter').show()
       @app.sessionManager.session.get('player').get('characters').fetch(session: @app.sessionManager.session)
 
@@ -41,11 +50,15 @@ define [
 
     enterWorld: (e) =>
       e.preventDefault()
-      # XXX implement character selection
-      # XXX send enter world event to world server
-      selectedCharacter = @app.sessionManager.session.get('player').get('characters').at(0)
-      @app.sessionManager.session.set('character', selectedCharacter)
-      this.replaceWithGameView()
+      return false if $(e.currentTarget).hasClass('disabled')
+      selectedId = @$characters.find('li[data-character].active').data('character')
+      if selectedId?
+        selectedCharacter = @app.sessionManager.session.get('player').get('characters').
+          find (char) => char.id is selectedId
+        @app.sessionManager.session.set('character', selectedCharacter)
+        this.replaceWithGameView()
+      else
+        console.log "No selected character"
       false
 
     replaceWithGameView: =>

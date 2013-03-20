@@ -26,6 +26,8 @@ define [
         @app.server.sendMessage(@app.server.createMessage({type: 'echo', text: @input.val()}))
         @input.val('')
 
+      # XXX send enter world event to world server
+
       # use on instead of listenTo so the handlers don't get wiped out when the view is removed
       # XXX: should probably be a sub-view
       @app.server. on 'message:echo', (message) =>
