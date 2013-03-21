@@ -14,10 +14,14 @@ define [
 
     render: =>
       @$el.html(GameTemplate)
+
       @app.connectToWorldServer()
 
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()
+
+      @characterPane = @$el.find('#character')
+      @characterPane.text(@app.sessionManager.session.get('character').get('name'))
 
       @input = $('input[name=message]')
       @output = $('#output')
@@ -28,9 +32,8 @@ define [
 
       # XXX send enter world event to world server
 
-      # use on instead of listenTo so the handlers don't get wiped out when the view is removed
       # XXX: should probably be a sub-view
-      @app.server. on 'message:echo', (message) =>
+      this.listenTo @app.server, 'message:echo', (message) =>
         @output.append("<li>#{message.get('text')}</li>")
 
     showAlert: (message, options = {}) =>
