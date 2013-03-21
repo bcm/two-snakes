@@ -5,42 +5,34 @@ define [
   'text!../../../characters/selector.html',
   'account_nav_view',
   'characters/new_view',
-  'character_collection'
-], ($, _, Backbone, CharactersTemplate, AccountNavView, NewCharacterView, CharacterCollection) ->
+  'characters/selection_view'
+], ($, _, Backbone, CharactersTemplate, AccountNavView, NewCharacterView, CharacterSelectionView) ->
   'use strict'
 
   class CharacterSelectorView extends Backbone.View
     constructor: (@app) ->
       @$el = $('#characters')
+      @characterSelectionViews = []
 
       this.delegateEvents {
         'click [data-button=character-new]': 'showNewCharacterView',
         'click [data-button=enter-world]': 'enterWorld'
       }
 
-      @accountNavView ?= new AccountNavView(@app)
+      @accountNavView = new AccountNavView(@app)
       @accountNavView.render()
 
     render: =>
       @$el.html(CharactersTemplate)
-      @$characters = @$el.find('#characters')
+      @$selections = @$el.find('#character-selections')
+      @$enterWorldControl = @$el.find('#enter')
+      @$enterWorldButton = @$enterWorldControl.find('[data-button=enter-world]')
 
-      this.listenTo @app.sessionManager.session.get('player').get('characters'), 'reset', (characters) =>
-        @$characters.html('')
-        characters.each (character) =>
-          # XXX: should probably be a sub-view
-          $char = $("""<li data-character="#{character.id}"><a>#{character.get('name')}</a></li>""")
-          $char.on 'click', =>
-            if $char.hasClass('active')
-              $char.removeClass('active')
-              $('[data-button=enter-world]').addClass('disabled')
-            else
-              @$characters.find('li[data-character]').removeClass('active')
-              $char.addClass('active')
-              $('[data-button=enter-world]').removeClass('disabled')
-          @$characters.append($char)
-        @$el.find('#enter').show()
-      @app.sessionManager.session.get('player').get('characters').fetch(session: @app.sessionManager.session)
+      characters = @app.sessionManager.session.get('player').get('characters')
+      characters.once 'reset', (characters) =>
+        this.showCharacterSelectionViews(characters)
+        this.showEnterWorldControl()
+      characters.fetch(session: @app.sessionManager.session)
 
     showNewCharacterView: (e) =>
       e.preventDefault()
@@ -50,16 +42,35 @@ define [
 
     enterWorld: (e) =>
       e.preventDefault()
-      return false if $(e.currentTarget).hasClass('disabled')
-      selectedId = @$characters.find('li[data-character].active').data('character')
-      if selectedId?
+      return false if @$enterWorldButton.hasClass('disabled')
+      selectedView = _.detect @characterSelectionViews, (v) => v.isSelected()
+      if selectedView?
         selectedCharacter = @app.sessionManager.session.get('player').get('characters').
-          find (char) => char.id is selectedId
+          detect (char) => char is selectedView.character
         @app.sessionManager.session.set('character', selectedCharacter)
         this.replaceWithGameView()
       else
         console.log "No selected character"
       false
+
+    showCharacterSelectionViews: (characters) =>
+      _.each @characterSelectionViews, (view) => view.remove()
+      characters.each (character) =>
+        this.showCharacterSelectionView(character)
+
+    showCharacterSelectionView: (character) =>
+      view = new CharacterSelectionView(@app, @$selections, character)
+      @characterSelectionViews.push(view)
+      view.$el.on 'character:selected', =>
+        otherViews = _.reject @characterSelectionViews, (v) => v.$el.is(view.$el)
+        _.each otherViews, (v) => v.$el.removeClass('active')
+        @$enterWorldButton.removeClass('disabled')
+      view.$el.on 'character:unselected', =>
+        @$enterWorldButton.addClass('disabled')
+      view.render()
+
+    showEnterWorldControl: =>
+      @$enterWorldControl.show()
 
     replaceWithGameView: =>
       this.remove()
