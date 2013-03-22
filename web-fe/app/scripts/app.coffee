@@ -14,10 +14,11 @@ define [
     constructor: ->
       @sessionManager = new SessionManager
       @sessionManager.resumeSession()
+      @server = new WorldServer(this)
       @router = new Router(this)
 
     connectToWorldServer: =>
-      @server = new WorldServer
+      @server.connect()
 
     disconnectFromWorldServer: =>
       @server.disconnect()

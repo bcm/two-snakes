@@ -15,8 +15,6 @@ define [
     render: =>
       @$el.html(GameTemplate)
 
-      @app.connectToWorldServer()
-
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()
 
@@ -27,14 +25,16 @@ define [
       @output = $('#output')
 
       @input.focus().on 'change', (e) =>
-        @app.server.sendMessage(@app.server.createMessage({type: 'echo', text: @input.val()}))
+        # XXX: command interpreter component to parse the input, format it into a command and send it to the server
+        @app.server.sendMessage(@app.server.createMessage(type: 'chat', text: @input.val()))
         @input.val('')
 
-      # XXX send enter world event to world server
+      # XXX: chat pane subview
+      # XXX: colorize system messages
+      this.listenTo @app.server, 'message:chat', (message) =>
+        @output.append("<li>#{message.formattedAt()} #{message.get('text')}</li>")
 
-      # XXX: should probably be a sub-view
-      this.listenTo @app.server, 'message:echo', (message) =>
-        @output.append("<li>#{message.get('text')}</li>")
+      @app.connectToWorldServer()
 
     showAlert: (message, options = {}) =>
       this.clearAlert()
