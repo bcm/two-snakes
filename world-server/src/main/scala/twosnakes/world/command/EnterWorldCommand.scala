@@ -3,10 +3,11 @@ package twosnakes.world.command
 import spray.json._
 import twosnakes.world.message.ChatMessage
 
-class EnterWorldCommand(characterId: Long) extends Command {
+class EnterWorldCommand(val characterId: Long) extends Command {
   def process = {
     // XXX: look up the character, figure out where in the world it is and remember it
-    Seq(ChatMessage("Welcome to the world of Two Snakes!"))
+    // XXX: externalize string
+    Seq(new ChatMessage("Welcome to the world of Two Snakes!"))
   }
 }
 

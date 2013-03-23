@@ -2,6 +2,16 @@ package twosnakes.world.message
 
 import spray.json._
 
-case class ChatMessage(text: String) extends Message {
-  val data = Map[String, JsValue]("text" -> JsString(text))
+class ChatMessage(val text: String) extends Message {
+  def messageType = ChatMessage.messageType
+}
+
+object ChatMessage {
+  val messageType = "chat"
+}
+
+object ChatMessageJsonProtocol extends DefaultJsonProtocol {
+  implicit object ChatMessageJsonFormat extends BaseMessageJsonFormat[ChatMessage] {
+    def write(message: ChatMessage) = JsObject("text" -> JsString(message.text), "at" -> JsNumber(message.at))
+  }
 }

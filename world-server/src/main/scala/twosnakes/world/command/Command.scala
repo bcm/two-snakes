@@ -4,7 +4,7 @@ import spray.json._
 import twosnakes.world.message.Message
 
 abstract class BaseCommandJsonFormat[T] extends RootJsonFormat[T] {
-  def write(command: T) = null
+  def write(command: T) = throw new UnsupportedOperationException
 }
 
 object CommandJsonProtocol extends DefaultJsonProtocol {
