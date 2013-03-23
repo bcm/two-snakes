@@ -14,8 +14,7 @@ class CharactersController < ApplicationController
   end
 
   protected
-    # XXX: replace with strong params
     def character_params
-      params.slice(:name, :str, :dex, :con, :int, :wis, :cha)
+      params.permit(:name, :str, :dex, :con, :int, :wis, :cha)
     end
 end

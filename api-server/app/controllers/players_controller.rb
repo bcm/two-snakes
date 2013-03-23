@@ -13,6 +13,6 @@ class PlayersController < ApplicationController
 
   protected
     def player_params
-      params.slice(:email, :password, :password_confirmation)
+      params.permit(:email, :password, :password_confirmation)
     end
 end

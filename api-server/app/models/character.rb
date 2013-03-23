@@ -1,7 +1,6 @@
 require 'securerandom'
 
 class Character < ActiveRecord::Base
-  attr_accessible :name, :str, :dex, :con, :int, :wis, :cha
   normalize_attributes :name
 
   validates :name, presence: true, length: {minimum: 2, maximum: 32, allow_blank: true},

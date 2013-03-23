@@ -6,9 +6,9 @@ describe 'Session management' do
     player = Fabricate(:player, password: password, password_confirmation: password)
     post '/session', email: player.email, password: password
     expect(response).to be_jsend_success
-    expect(response.jsend_data[:token]).to be
+    expect(response.jsend_data[:sessionToken]).to be
     player.reload
-    expect(player.session_token).to eq(response.jsend_data[:token])
+    expect(player.session_token).to eq(response.jsend_data[:sessionToken])
   end
 
   it 'returns an error to a player submitting invalid credentials' do

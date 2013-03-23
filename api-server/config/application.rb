@@ -16,7 +16,7 @@ module ApiServer
     config.filter_parameters += [:password]
     config.active_support.escape_html_entities_in_json = true
     config.active_record.schema_format = :sql
-    config.active_record.whitelist_attributes = true
+    config.active_record.whitelist_attributes = false
     config.assets.enabled = false
     config.middleware.use Rack::Cors do
       allow do

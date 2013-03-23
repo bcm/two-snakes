@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include ActionController::StrongParameters
   include JSend::Rails::Controller
   include ControllerMixins::Authentication
 

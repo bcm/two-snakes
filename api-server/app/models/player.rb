@@ -3,7 +3,6 @@ require 'securerandom'
 class Player < ActiveRecord::Base
   authenticates_with_sorcery!
 
-  attr_accessible :email, :password, :password_confirmation
   normalize_attributes :email, :password, :password_confirmation
 
   validates :email, presence: true, length: {minimum: 3, maximum: 255, allow_blank: true},

@@ -11,6 +11,7 @@ gem 'rack-cors', '~> 0.2.7'
 gem 'rails', '~> 3.2.12'
 gem 'rails-api', '~> 0.0.3'
 gem 'sorcery', '~> 0.8.1'
+gem 'strong_parameters', '~> 0.2.0'
 gem 'thin', '~> 1.5.0'
 
 group :development do
