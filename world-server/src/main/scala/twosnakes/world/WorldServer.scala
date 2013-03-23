@@ -11,6 +11,7 @@ import org.mashupbots.socko.routes._
 import org.mashupbots.socko.infrastructure.Logger
 import org.mashupbots.socko.webserver.WebServer
 import org.mashupbots.socko.webserver.WebServerConfig
+import twosnakes.world.command.Command
 
 object WorldServer extends Logger {
   val actorSystem = ActorSystem("WorldActorSystem")

@@ -1,4 +1,4 @@
-package twosnakes.world
+package twosnakes.world.message
 
 import spray.json._
 
@@ -11,8 +11,4 @@ trait Message {
   }
 
   val data: Map[String, JsValue]
-}
-
-case class ChatMessage(text: String) extends Message {
-  val data = Map[String, JsValue]("text" -> JsString(text))
 }
