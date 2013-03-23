@@ -4,39 +4,59 @@ define [
   'backbone',
   'text!../../../characters/new.html',
   'text!../../../form_inline_error.html'
-  'character'
-], ($, _, Backbone, NewCharacterTemplate, FormErrorTemplate, Character) ->
+  'character',
+  'die'
+], ($, _, Backbone, NewCharacterTemplate, FormErrorTemplate, Character, Die) ->
   'use strict'
 
   class NewCharacterView extends Backbone.View
     constructor: (@app, @characterSelectorView) ->
-      @$el = $('#character-new')
-
-      this.delegateEvents {
-        'submit #character-new-form': 'createCharacter',
-      }
 
     render: =>
-      @$el.html(NewCharacterTemplate) if @$el.is(':empty')
-      @$modal ?= @$el.find('.modal')
+      @$el = $('#character-new')
+      @character = new Character({}, collection: @app.sessionManager.session.get('player').get('characters'))
+
+      this.delegateEvents {
+        'click [data-button=roll]': (e) =>
+          e.preventDefault()
+          this.rollAbilityScores()
+          false
+        'submit #character-new-form': (e) =>
+          e.preventDefault()
+          this.createCharacter()
+          false
+      }
+
+      @$el.html($(NewCharacterTemplate))
+      this.rollAbilityScores()
+
+      @$modal = @$el.find('.modal')
       @$modal.modal('show')
+
       this
 
+    rollAbilityScores: =>
+      for ability in ["str", "dex", "con", "int", "wis", "cha"]
+        @$el.find("#character-new-#{ability}").html(Die.roll(4, 6, dropLowest: 1))
+
     createCharacter: (e) =>
-      e.preventDefault()
       this.clearModalErrors()
-      character = new Character({
-        name: @$el.find('#character_name').val(),
-      }, collection: @app.sessionManager.session.get('player').get('characters'))
-      character.once 'sync:success', (character) =>
+      @character.once 'sync:success', (character) =>
         this.remove()
         @characterSelectorView.render()
-      character.once 'sync:failure', (errors) =>
+      @character.once 'sync:failure', (errors) =>
         this.showModalErrors(errors)
-      character.on 'invalid', (model, errors) =>
+      @character.on 'invalid', (model, errors) =>
         this.showModalErrors(errors)
-      character.save({}, session: @app.sessionManager.session)
-      false
+      @character.save({
+        name: @$el.find('#character_name').val(),
+        str: @$el.find('#character-new-str').text(),
+        dex: @$el.find('#character-new-dex').text(),
+        con: @$el.find('#character-new-con').text(),
+        int: @$el.find('#character-new-int').text(),
+        wis: @$el.find('#character-new-wis').text(),
+        cha: @$el.find('#character-new-cha').text(),
+      }, session: @app.sessionManager.session)
 
     # XXX: abstract modal stuff
     showModalErrors: (errors) =>
@@ -54,5 +74,11 @@ define [
       @$modal.find('.help-inline').remove()
 
     remove: =>
-      @$modal.modal('hide') if @$modal?
-      super()
+      if @$modal?
+        @$modal.modal('hide')
+        @$modal = null
+      @character = null if @character?
+      @$el.html('')
+      this.stopListening()
+      this
+

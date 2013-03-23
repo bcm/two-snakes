@@ -7,11 +7,27 @@ define [
   'use strict'
 
   class CharacterSelectionView extends Backbone.View
-    constructor: (@app, @$container, @character) ->
+    constructor: (@app, @characterSelectorView, @$container, @character) ->
       @$el = $(CharacterSelectionTemplate)
 
+      timeout = null
+      delay = 100
+
       this.delegateEvents {
-        'click a': 'selectCharacter'
+        'click a': (e) =>
+          timeout = setTimeout((=>
+            e.preventDefault()
+            timeout = null
+            this.selectCharacter()
+            false
+          ), delay)
+        'dblclick a': (e) =>
+          if timeout
+            clearTimeout(timeout)
+            timeout = null
+          e.preventDefault()
+          this.enterWorld()
+          false
       }
 
     render: =>
@@ -19,11 +35,15 @@ define [
       @$el.find('a').html(@character.get('name'))
       @$container.append(@$el)
 
-    selectCharacter: (e) =>
+    selectCharacter: =>
       if this.isSelected()
         this.unselect()
       else
         this.select()
+
+    enterWorld: =>
+      @app.sessionManager.session.set('character', @character)
+      this.replaceWithGameView()
 
     isSelected: =>
       @$el.hasClass('active')
@@ -35,3 +55,7 @@ define [
     unselect: =>
       @$el.removeClass('active')
       @$el.trigger 'character:unselected'
+
+    replaceWithGameView: =>
+      @characterSelectorView.remove()
+      @app.router.navigate('play', trigger: true, replace: true)

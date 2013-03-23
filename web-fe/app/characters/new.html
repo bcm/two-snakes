@@ -5,14 +5,32 @@
       <h3 id="character-new-label">New character</h3>
     </div>
     <div class="modal-body">
-      <fieldset>
-        <div class="control-group">
-          <label class="control-label" for="character_name">Name</label>
-          <div class="controls">
-            <input id="character_name" name="character[name]" type="name" class="input-xlarge" maxlength="255" required>
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="character_name">Name</label>
+            <div class="controls">
+              <input id="character_name" name="character[name]" type="name" class="input-xlarge" maxlength="255" required>
+            </div>
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      <h4>Abilities</h4>
+      <div class="row-fluid">
+        <div class="span1">Str</div>
+        <div class="span2"><span id="character-new-str" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Dex</div>
+        <div class="span2"><span id="character-new-dex" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Con</div>
+        <div class="span2"><span id="character-new-con" class="input-mini uneditable-input">10</span></div>
+        <div class="span2"><button class="btn pull-right" data-button="roll">Roll</button></div>
+      </div>
+      <div class="row-fluid">
+        <div class="span1">Int</div>
+        <div class="span2"><span id="character-new-int" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Wis</div>
+        <div class="span2"><span id="character-new-wis" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Cha</div>
+        <div class="span2"><span id="character-new-cha" class="input-mini uneditable-input">10</span></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary">Create</button>

@@ -37,7 +37,13 @@ CREATE TABLE characters (
     name character varying(32) NOT NULL,
     player_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    str smallint DEFAULT 10 NOT NULL,
+    dex smallint DEFAULT 10 NOT NULL,
+    con smallint DEFAULT 10 NOT NULL,
+    "int" smallint DEFAULT 10 NOT NULL,
+    wis smallint DEFAULT 10 NOT NULL,
+    cha smallint DEFAULT 10 NOT NULL
 );
 
 
@@ -193,3 +199,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130307144910');
 INSERT INTO schema_migrations (version) VALUES ('20130307150841');
 
 INSERT INTO schema_migrations (version) VALUES ('20130316185622');
+
+INSERT INTO schema_migrations (version) VALUES ('20130323194507');

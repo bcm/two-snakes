@@ -5,8 +5,9 @@ define [
   'text!../game.html',
   'alert_view',
   'account_nav_view',
+  'game/character_pane_view',
   'world_server/chat_command'
-], ($, _, Backbone, GameTemplate, AlertView, AccountNavView, ChatCommand) ->
+], ($, _, Backbone, GameTemplate, AlertView, AccountNavView, CharacterPaneView, ChatCommand) ->
   'use strict'
 
   class GameView extends Backbone.View
@@ -19,8 +20,8 @@ define [
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()
 
-      @characterPane = @$el.find('#character')
-      @characterPane.text(@app.sessionManager.session.get('character').get('name'))
+      @characterPaneView ?= new CharacterPaneView(@app)
+      @characterPaneView.render()
 
       @input = $('input[name=message]')
       @output = $('#output')
@@ -49,6 +50,7 @@ define [
     remove: =>
       @alertView.remove() if @alertView?
       @accountNavView.remove() if @accountNavView?
+      @characterPaneView.remove() if @characterPaneView?
       @app.disconnectFromWorldServer()
       @$el.html('')
       this.stopListening()

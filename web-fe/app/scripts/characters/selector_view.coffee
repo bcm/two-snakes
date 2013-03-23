@@ -15,8 +15,14 @@ define [
       @characterSelectionViews = []
 
       this.delegateEvents {
-        'click [data-button=character-new]': 'showNewCharacterView',
-        'click [data-button=enter-world]': 'enterWorld'
+        'click [data-button=character-new]': (e) =>
+          e.preventDefault()
+          this.showNewCharacterView()
+          false
+        'click [data-button=enter-world]': (e) =>
+          e.preventDefault()
+          this.enterWorld()
+          false
       }
 
       @accountNavView = new AccountNavView(@app)
@@ -34,15 +40,12 @@ define [
         this.showEnterWorldControl()
       characters.fetch(session: @app.sessionManager.session)
 
-    showNewCharacterView: (e) =>
-      e.preventDefault()
+    showNewCharacterView: =>
       @newCharacterView ?= new NewCharacterView(@app, this)
       @newCharacterView.render()
-      false
 
-    enterWorld: (e) =>
-      e.preventDefault()
-      return false if @$enterWorldButton.hasClass('disabled')
+    enterWorld: =>
+      return if @$enterWorldButton.hasClass('disabled')
       selectedView = _.detect @characterSelectionViews, (v) => v.isSelected()
       if selectedView?
         selectedCharacter = @app.sessionManager.session.get('player').get('characters').
@@ -51,7 +54,6 @@ define [
         this.replaceWithGameView()
       else
         console.log "No selected character"
-      false
 
     showCharacterSelectionViews: (characters) =>
       _.each @characterSelectionViews, (view) => view.remove()
@@ -59,7 +61,7 @@ define [
         this.showCharacterSelectionView(character)
 
     showCharacterSelectionView: (character) =>
-      view = new CharacterSelectionView(@app, @$selections, character)
+      view = new CharacterSelectionView(@app, this, @$selections, character)
       @characterSelectionViews.push(view)
       view.$el.on 'character:selected', =>
         otherViews = _.reject @characterSelectionViews, (v) => v.$el.is(view.$el)
