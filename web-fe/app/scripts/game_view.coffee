@@ -4,8 +4,9 @@ define [
   'backbone',
   'text!../game.html',
   'alert_view',
-  'account_nav_view'
-], ($, _, Backbone, GameTemplate, AlertView, AccountNavView) ->
+  'account_nav_view',
+  'world_server/chat_command'
+], ($, _, Backbone, GameTemplate, AlertView, AccountNavView, ChatCommand) ->
   'use strict'
 
   class GameView extends Backbone.View
@@ -26,13 +27,13 @@ define [
 
       @input.focus().on 'change', (e) =>
         # XXX: command interpreter component to parse the input, format it into a command and send it to the server
-        @app.server.sendMessage(@app.server.createMessage(type: 'chat', text: @input.val()))
+        @app.server.sendCommand(new ChatCommand(@input.val()))
         @input.val('')
 
       # XXX: chat pane subview
       # XXX: colorize system messages
       this.listenTo @app.server, 'message:chat', (message) =>
-        @output.append("<li>#{message.formattedAt()} #{message.get('text')}</li>")
+        @output.append("<li>#{message.formattedAt()} #{message.text}</li>")
 
       @app.connectToWorldServer()
 

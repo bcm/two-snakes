@@ -1,9 +1,9 @@
 package twosnakes.world
 
 import akka.actor.Actor
+import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.event.Logging
 import java.util.Date
 import org.mashupbots.socko.events.HttpRequestEvent
 import org.mashupbots.socko.events.WebSocketFrameEvent
@@ -11,7 +11,6 @@ import org.mashupbots.socko.routes._
 import org.mashupbots.socko.infrastructure.Logger
 import org.mashupbots.socko.webserver.WebServer
 import org.mashupbots.socko.webserver.WebServerConfig
-import scala.util.parsing.json.JSON
 
 object WorldServer extends Logger {
   val actorSystem = ActorSystem("WorldActorSystem")
@@ -35,17 +34,11 @@ object WorldServer extends Logger {
   }
 }
 
-class WebSocketHandler extends Actor {
-  val log = Logging(context.system, this)
-
+class WebSocketHandler extends Actor with ActorLogging {
   def receive = {
     case event: WebSocketFrameEvent =>
-      val parsed = JSON.parseFull(event.readText)
-      event.writeText(event.readText)
+      for (message <- Command(event.readText).process)
+        event.writeText(message.serialize)
       context.stop(self)
-    case _ => {
-      log.warning("received unknown message")
-      context.stop(self)
-    }
   }
 }
