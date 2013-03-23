@@ -33,7 +33,7 @@ define [
       # XXX: chat pane subview
       # XXX: colorize system messages
       this.listenTo @app.server, 'message:chat', (message) =>
-        @output.append("<li>#{message.formattedAt()} #{message.text}</li>")
+        @output.append("<li>#{message.formattedAt()} #{_.escape message.text}</li>")
 
       @app.connectToWorldServer()
 
