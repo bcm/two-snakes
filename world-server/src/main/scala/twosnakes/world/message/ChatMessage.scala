@@ -2,9 +2,7 @@ package twosnakes.world.message
 
 import spray.json._
 
-class ChatMessage(val text: String) extends Message {
-  def messageType = ChatMessage.messageType
-}
+case class ChatMessage(val text: String) extends Message
 
 object ChatMessage {
   val messageType = "chat"
