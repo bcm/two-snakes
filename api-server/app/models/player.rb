@@ -32,6 +32,10 @@ class Player < ActiveRecord::Base
     characters.order('LOWER(name) ASC')
   end
 
+  def find_character(id)
+    characters.find(id)
+  end
+
   def self.authenticate_with_token(token)
     find_by_session_token(token)
   end

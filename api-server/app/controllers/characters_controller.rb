@@ -13,6 +13,11 @@ class CharactersController < ApplicationController
     end
   end
 
+  def destroy
+    current_player.find_character(params[:id]).destroy
+    render_jsend(:success)
+  end
+
   protected
     def character_params
       params.permit(:name, :str, :dex, :con, :int, :wis, :cha)

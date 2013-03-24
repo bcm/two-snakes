@@ -1,10 +1,18 @@
 <header class="page-header">
   <h1>Choose a character</h1>
 </header>
+
 <ul id="character-selections" class="nav nav-list"></ul>
-<span id="enter" style="display:none">
-  <button data-button="enter-world" class="btn btn-primary disabled">Enter world</button>
-  or
-</span>
-<button data-button="character-new" class="btn">Create a character</button>
+
+<div class="btn-group">
+  <button data-selection="character" data-button="enter-world" class="btn btn-primary disabled" style="display:none">
+    Enter world
+  </button>
+  <button data-selection="character" data-button="character-delete" class="btn btn-danger disabled"
+          style="display:none">
+    Delete selected
+  </button>
+  <button data-button="character-new" class="btn">Create a character</button>
+</div>
+
 <div id="character-new"></div>
