@@ -25,9 +25,6 @@ define [
           false
       }
 
-      @accountNavView = new AccountNavView(@app)
-      @accountNavView.render()
-
     render: =>
       @$el.html(CharactersTemplate)
       @$selections = @$el.find('#character-selections')
@@ -37,8 +34,12 @@ define [
       characters = @app.sessionManager.session.get('player').get('characters')
       characters.once 'reset', (characters) =>
         this.showCharacterSelectionViews(characters)
-        this.showEnterWorldControl()
+        if characters.length > 0
+          this.showEnterWorldControl()
       characters.fetch(session: @app.sessionManager.session)
+
+      @accountNavView ?= new AccountNavView(@app)
+      @accountNavView.render()
 
     showNewCharacterView: =>
       @newCharacterView ?= new NewCharacterView(@app, this)
@@ -56,7 +57,7 @@ define [
         console.log "No selected character"
 
     showCharacterSelectionViews: (characters) =>
-      _.each @characterSelectionViews, (view) => view.remove()
+      view.remove() for view in @characterSelectionViews
       characters.each (character) =>
         this.showCharacterSelectionView(character)
 

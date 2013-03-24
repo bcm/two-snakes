@@ -32,8 +32,7 @@ define [
       )
       player.once 'sync:success', (player) =>
         this.app.sessionManager.initSession(player)
-        @loginView.replaceWithCharacterView()
-        this.app.router.characterView.showAlert("Welcome #{player.email}!", fade: true)
+        @loginView.replaceWithCharacterSelectorView()
       player.once 'sync:failure', (errors) =>
         this.showModalErrors(errors)
       player.on 'invalid', (model, errors) =>

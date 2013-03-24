@@ -17,7 +17,7 @@ define [
         'click [data-button=signup]': 'showSignUpView'
       }
 
-      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithCharacterView
+      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithCharacterSelectorView
       this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
 
     render: =>
@@ -35,7 +35,7 @@ define [
       @signupView.render()
       false
 
-    replaceWithCharacterView: =>
+    replaceWithCharacterSelectorView: =>
       this.remove()
       @app.router.navigate('characters', trigger: true, replace: true)
 
