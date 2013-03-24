@@ -14,3 +14,6 @@ define [
 
     parse: (response, options = {}) =>
       response.characters
+
+    comparator: (a, b) =>
+      a.get('name').toLowerCase().localeCompare(b.get('name').toLowerCase())

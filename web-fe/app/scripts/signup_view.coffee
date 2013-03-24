@@ -30,8 +30,10 @@ define [
         password: @$el.find('#signup_password').val(),
         password_confirmation: @$el.find('#signup_password_confirmation').val()
       )
-      player.once 'sync:success', (player) =>
-        this.app.sessionManager.initSession(player)
+      player.once 'sync:success', (data) =>
+        # to get rid of the submitted credentials and incorporate the returned data (including session token),
+        # create a new Player to add to the session
+        @app.logInThroughTheBackDoor(new Player(data))
         @loginView.replaceWithCharacterSelectorView()
       player.once 'sync:failure', (errors) =>
         this.showModalErrors(errors)

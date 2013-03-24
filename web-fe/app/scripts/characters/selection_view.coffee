@@ -30,6 +30,9 @@ define [
           false
       }
 
+      this.listenTo @app, 'character:selected', (character) =>
+        this.characterSelected(character)
+
     render: =>
       @$el.data('character', @character.id)
       @$el.find('a').html(@character.get('name'))
@@ -42,7 +45,7 @@ define [
         this.select()
 
     enterWorld: =>
-      @app.sessionManager.session.set('character', @character)
+      @app.enterWorld(@character)
       this.replaceWithGameView()
 
     isSelected: =>
@@ -50,11 +53,19 @@ define [
 
     select: =>
       @$el.addClass('active')
-      @$el.trigger 'character:selected'
+      @app.trigger 'character:selected', @character
 
     unselect: =>
       @$el.removeClass('active')
-      @$el.trigger 'character:unselected'
+      @app.trigger 'character:unselected', @character
+
+    characterSelected: (selected) =>
+      # responds to character:selected triggered by other view instances. always call select() or unselect() to
+      # trigger that event in addition to setting selection state.
+      if _.isEqual(selected, @character)
+        @$el.addClass('active')
+      else
+        @$el.removeClass('active')
 
     replaceWithGameView: =>
       @characterSelectorView.remove()

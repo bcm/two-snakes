@@ -11,30 +11,34 @@ define [
       @$el = $('#account-nav')
 
       this.delegateEvents {
-        'click [data-button=log-out]': 'logOut',
-        'click [data-button=quit]': 'quit'
+        'click [data-button=log-out]': (e) =>
+          e.preventDefault()
+          this.exitWorld()
+          false
+        'click [data-button=quit]': (e) =>
+          e.preventDefault()
+          this.quit()
+          false
       }
 
     render: =>
+      this.listenTo @app, 'session:end:success', this.replaceWithQuitView
+
       $tmpl = $(AccountNavTemplate)
-      if @app.sessionManager.session.get('character')?
+      if @app.inWorld()
         $tmpl.find('[data-button=log-out]').parent().show()
       @$el.html($tmpl)
       this
 
-    logOut: (e) =>
-      e.preventDefault()
-      @app.sessionManager.session.unset('character')
+    exitWorld: =>
+      @app.exitWorld()
       @app.router.navigate('#logout', trigger: true)
-      false
 
-    quit: (e) =>
-      e.preventDefault()
-      @app.sessionManager.once 'session:end:success', =>
-        # route doesn't actually exist, but it will force the login screen
-        @app.router.navigate('#quit', trigger: true)
-      @app.sessionManager.endSession()
-      false
+    quit: =>
+      @app.quit()
+
+    replaceWithQuitView: =>
+      @app.router.navigate('#quit', trigger: true)
 
     remove: =>
       @$el.html('')

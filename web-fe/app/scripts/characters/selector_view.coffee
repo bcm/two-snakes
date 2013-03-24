@@ -31,70 +31,87 @@ define [
       }
 
     render: =>
+      this.listenTo @app, 'character:selected', (character) =>
+        this.characterSelected(character)
+      this.listenTo @app, 'character:unselected', (character) =>
+        this.characterUnselected(character)
+
       @$el.html(CharactersTemplate)
       @$selections = @$el.find('#character-selections')
 
-      characters = @app.sessionManager.session.get('player').get('characters')
-      characters.once 'reset', (characters) =>
-        this.showCharacterSelectionViews(characters)
-        unless characters.isEmpty()
-          @$el.find('[data-selection=character]').show()
-      characters.fetch(session: @app.sessionManager.session)
+      characters = @app.characters()
+      if characters.isEmpty()
+        characters.once 'reset', (characters) =>
+          this.renderCharacterSelectionViews(characters)
+        characters.fetch(session: @app.session())
+      else
+        this.renderCharacterSelectionViews(characters)
 
       @accountNavView ?= new AccountNavView(@app)
       @accountNavView.render()
+
+    enterWorld: =>
+      if @selectedCharacter?
+        @app.enterWorld(@selectedCharacter)
+        this.replaceWithGameView()
+
+    deleteCharacter: =>
+      if @selectedCharacter?
+        @selectedCharacter.once 'sync', =>
+          @selectedCharacter = null
+          @app.trigger "character:unselected", @selectedCharacter
+          this.removeCharacterSelectionView(this.selectedView())
+        @selectedCharacter.destroy(session: @app.session())
+
+    selectedView: =>
+      _.detect @characterSelectionViews, (v) => v.isSelected()
+
+    showSelectedCharacterControls: =>
+      @$el.find('[data-selection=character]').show()
+
+    hideSelectedCharacterControls: =>
+      @$el.find('[data-selection=character]').hide()
+
+    enableSelectedCharacterControls: =>
+      @$el.find('[data-selection=character]').removeClass('disabled')
+
+    disableSelectedCharacterControls: =>
+      @$el.find('[data-selection=character]').addClass('disabled')
 
     showNewCharacterView: =>
       @newCharacterView ?= new NewCharacterView(@app, this)
       @newCharacterView.render()
 
-    enterWorld: =>
-      character = this.selectedCharacter()
-      if character?
-        @app.sessionManager.session.set('character', character)
-        this.replaceWithGameView()
-
-    deleteCharacter: =>
-      character = this.selectedCharacter()
-      if character?
-        character.once 'sync', =>
-          view = this.selectedView()
-          this.characterViewUnselected(view)
-          view.remove()
-        character.destroy(session: @app.sessionManager.session)
-
-    selectedView: =>
-      _.detect @characterSelectionViews, (v) => v.isSelected()
-
-    selectedCharacter: =>
-      selectedView = this.selectedView()
-      if selectedView?
-        @app.sessionManager.session.get('player').get('characters').detect (char) => char is selectedView.character
-
-    showCharacterSelectionViews: (characters) =>
-      view.remove() for view in @characterSelectionViews
+    renderCharacterSelectionViews: (characters) =>
+      this.removeCharacterSelectionViews()
       characters.each (character) =>
-        this.showCharacterSelectionView(character)
+        this.renderCharacterSelectionView(character)
+      unless @app.characters().isEmpty()
+        this.showSelectedCharacterControls()
 
-    showCharacterSelectionView: (character) =>
+    renderCharacterSelectionView: (character) =>
       view = new CharacterSelectionView(@app, this, @$selections, character)
       @characterSelectionViews.push(view)
-      view.$el.on 'character:selected', =>
-        this.characterViewSelected(view)
-      view.$el.on 'character:unselected', =>
-        this.characterViewUnselected(view)
       view.render()
 
-    characterViewSelected: (view) =>
-      otherViews = _.reject @characterSelectionViews, (v) => v.$el.is(view.$el)
-      _.each otherViews, (v) => v.$el.removeClass('active')
-      @$el.find('[data-selection=character]').removeClass('disabled')
+    removeCharacterSelectionViews: =>
+      this.removeCharacterSelectionView(view) for view in @characterSelectionViews
 
-    characterViewUnselected: (view) =>
-      @$el.find('[data-selection=character]').addClass('disabled')
-      characters = @app.sessionManager.session.get('player').get('characters')
-      if characters.isEmpty()
-        @$el.find('[data-selection=character]').hide()
+    removeCharacterSelectionView: (view) =>
+      # XXX: makes a copy. need a real remove function.
+      @characterSelectionViews = _.without @characterSelectionViews, view
+      view.remove()
+
+    characterSelected: (character) =>
+      @selectedCharacter = character
+      this.showSelectedCharacterControls()
+      this.enableSelectedCharacterControls()
+
+    characterUnselected: (character) =>
+      @selectedCharacter = null
+      this.disableSelectedCharacterControls()
+      if @app.characters().isEmpty()
+        this.hideSelectedCharacterControls()
 
     replaceWithGameView: =>
       this.remove()

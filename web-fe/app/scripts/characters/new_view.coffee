@@ -14,7 +14,7 @@ define [
 
     render: =>
       @$el = $('#character-new')
-      @character = new Character({}, collection: @app.sessionManager.session.get('player').get('characters'))
+      @character = new Character({}, collection: @app.characters())
 
       this.delegateEvents {
         'click [data-button=roll]': (e) =>
@@ -39,11 +39,14 @@ define [
       for ability in ["str", "dex", "con", "int", "wis", "cha"]
         @$el.find("#character-new-#{ability}").html(Die.roll(4, 6, dropLowest: 1))
 
-    createCharacter: (e) =>
+    createCharacter: =>
       this.clearModalErrors()
-      @character.once 'sync:success', (character) =>
+      @character.once 'sync:success', (data) =>
+        char = @character # this.remove() nulls out @character
+        @app.characters().add(char)
         this.remove()
         @characterSelectorView.render()
+        @app.trigger 'character:selected', char
       @character.once 'sync:failure', (errors) =>
         this.showModalErrors(errors)
       @character.on 'invalid', (model, errors) =>
@@ -56,7 +59,7 @@ define [
         int: @$el.find('#character-new-int').text(),
         wis: @$el.find('#character-new-wis').text(),
         cha: @$el.find('#character-new-cha').text(),
-      }, session: @app.sessionManager.session)
+      }, session: @app.session())
 
     # XXX: abstract modal stuff
     showModalErrors: (errors) =>

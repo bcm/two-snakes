@@ -12,7 +12,7 @@ define [
     render: =>
       @$el = $('#character-pane')
       $tmpl = $(CharacterPaneTemplate)
-      character = @app.sessionManager.session.get('character')
+      character = @app.character()
       $tmpl.find('#character-name').html(character.get('name'))
       $tmpl.find('#character-str').html(character.get('str'))
       $tmpl.find('#character-dex').html(character.get('dex'))

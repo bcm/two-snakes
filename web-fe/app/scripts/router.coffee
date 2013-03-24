@@ -29,6 +29,12 @@ define [
         @gameView.remove() if @gameView?
         this.navigate('characters', trigger: true, replace: true)
 
+      this.route 'quit', 'quit', =>
+        @characterSelectorView.remove() if @characterSelectorView?
+        @gameView.remove() if @gameView?
+        # force login
+        this.navigate('characters', trigger: true, replace: true)
+
       Backbone.history.start()
 
     route: (route, name, callback) =>

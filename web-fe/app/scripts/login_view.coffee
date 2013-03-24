@@ -13,20 +13,26 @@ define [
       @$el = $('#login')
 
       this.delegateEvents {
-        'submit #login-form': 'logIn',
-        'click [data-button=signup]': 'showSignUpView'
+        'submit #login-form': (e) =>
+          e.preventDefault()
+          this.logIn()
+          false
+        'click [data-button=signup]': (e) =>
+          e.preventDefault()
+          this.showSignUpView()
+          false
       }
 
-      this.listenTo @app.sessionManager, 'session:start:success', this.replaceWithCharacterSelectorView
-      this.listenTo @app.sessionManager, 'session:start:failure', this.showLoginFailedAlert
-
     render: =>
+      this.listenTo @app, 'session:start:success', this.replaceWithCharacterSelectorView
+      this.listenTo @app, 'session:start:failure', this.showLoginFailedAlert
+
       @$el.html(LoginTemplate)
       this
 
     logIn: =>
       this.clearAlert()
-      @app.sessionManager.startSession(@$el.find('#email').val(), @$el.find('#password').val())
+      @app.logIn(@$el.find('#email').val(), @$el.find('#password').val())
       false
 
     showSignUpView: =>
