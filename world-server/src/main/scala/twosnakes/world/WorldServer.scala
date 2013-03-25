@@ -26,6 +26,9 @@ object WorldServer extends Logger {
   })
 
   def main(args: Array[String]) = {
+    // XXX: ensure we can connect to the database
+    // XXX: allow port to be provided as command line options
+
     val webServer = new WebServer(WebServerConfig(), routes, actorSystem)
     webServer.start()
 

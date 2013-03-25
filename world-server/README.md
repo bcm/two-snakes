@@ -25,7 +25,27 @@ Scala runs on the JVM. **Version 1.7.x**
 
 On OS X, download a JDK at http://www.oracle.com/technetwork/java/javase/downloads/index.html.
 
-## 2. Build the server
+## 2. Environment-specific configuration
+
+Configuration items specific to the host environment are configured in the `.env` file. This file is read when the server starts up and its contents are made available to the server process as environment variables. The file is ignored by git and must be created by hand.
+
+A similar file named `.env.test` is used for the test environment.
+
+## 3. Database
+
+Data is stored in [PostgreSQL](http://www.postgresql.org/). See the [API Server documentation] for how to create and set up the database.
+
+### 3.1 Database connection
+
+Database connection information is taken from the `DATABASE_URL` environment variable in the `.env` file.
+
+#### Development environment
+
+```sh
+$ echo DATABASE_URL=jdbc:postgresql://localhost/twosnakes_development?user=twosnakes&password=twosnakes >> .env
+```
+
+## 4. Build the server
 
 Use sbt to compile the code:
 
@@ -54,20 +74,26 @@ $ sbt clean
 [success] Total time: 0 s, completed Mar 3, 2013 11:30:56 AM
 ```
 
-## 3. Run the server
+## 5. Run the server
 
-The server runs on port 8888 by default.
+This method of running the server relies on the [sbt start script plugin](https://github.com/sbt/sbt-start-script) to generate a `target/start` script and [Foreman](https://github.com/ddollar/foreman) to run the script.
+
+Any time a dependency is added to the build, the start script must be regenerated:
 
 ```sh
-$ sbt run
+$ sbt stage
 [info] Loading project definition from /Users/bcm/Projects/maz/two-snakes/world-server/project
 [info] Set current project to world-server (in build file:/Users/bcm/Projects/maz/two-snakes/world-server/)
-[info] Updating {file:/Users/bcm/Projects/maz/two-snakes/world-server/}default-dc97d9...
-[info] Resolving ch.qos.logback#logback-core;1.0.9 ...
-[info] Done updating.
-[info] Compiling 1 Scala source to /Users/bcm/Projects/maz/two-snakes/world-server/target/scala-2.10/classes...
-[info] Running twosnakes.world.WorldServer 
-11:32:08.482 [run-main] INFO  o.m.socko.webserver.WebServer - Socko server '[WebServer, localhost, 8888]' started on {}:{}
+[info] Wrote start script for mainClass := Some(twosnakes.world.WorldServer) to /Users/bcm/Projects/maz/two-snakes/world-server/target/start
+[success] Total time: 1 s, completed Mar 3, 2013 11:37:38 AM
+```
+
+Foreman exports the environment from `.env` and runs the start script:
+
+```sh
+$ foreman start
+11:39:20 world.1  | started with pid 4859
+11:39:23 world.1  | 11:39:23.247 [main] INFO  o.m.socko.webserver.WebServer - Socko server '[WebServer, localhost, 8888]' started on {}:{}
 ```
 
 Log output is written to the console.
@@ -76,20 +102,4 @@ Log output is written to the console.
 # When a request is received at localhost:8888
 11:32:49.869 [New I/O worker #1] DEBUG o.m.socko.webserver.RequestHandler - HTTP EndPoint(GET,localhost:8888,/) CHANNEL=731770033 
 11:32:50.346 [New I/O worker #1] DEBUG o.m.socko.webserver.RequestHandler - HTTP EndPoint(GET,localhost:8888,/favicon.ico) CHANNEL=731770033
-```
-
-### Run the server with Foreman
-
-This method is used by Heroku to run the server without keeping sbt in memory. It relies on the [sbt start script plugin](https://github.com/sbt/sbt-start-script) to generate a `target/start` script and [Foreman](https://github.com/ddollar/foreman) to run the script.
-
-```sh
-$ sbt stage
-[info] Loading project definition from /Users/bcm/Projects/maz/two-snakes/world-server/project
-[info] Set current project to world-server (in build file:/Users/bcm/Projects/maz/two-snakes/world-server/)
-[info] Wrote start script for mainClass := Some(twosnakes.world.WorldServer) to /Users/bcm/Projects/maz/two-snakes/world-server/target/start
-[success] Total time: 1 s, completed Mar 3, 2013 11:37:38 AM
-
-$ foreman start
-11:39:20 web.1  | started with pid 4859
-11:39:23 web.1  | 11:39:23.247 [main] INFO  o.m.socko.webserver.WebServer - Socko server '[WebServer, localhost, 8888]' started on {}:{}
 ```
