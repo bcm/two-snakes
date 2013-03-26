@@ -11,25 +11,27 @@ import twosnakes.world.message.Message
 
 object WorldServer extends Logger {
   val actorSystem = ActorSystem("WorldActorSystem")
-  val config = WorldServerConfig(actorSystem)
+  val sessionManager = actorSystem.actorOf(Props[SessionManager], "SessionManager")
+  val webServerConfig = WorldServerConfig(actorSystem)
 
   val routes = Routes({
     case WebSocketHandshake(handshake) => handshake match {
       case Path("/websocket/") =>
-        handshake.authorize()
-        // XXX: onSuccess, register this client with the client manager
-        // see https://github.com/mashupbots/socko/blob/master/socko-webserver/src/main/scala/org/mashupbots/socko/handlers/WebSocketBroadcaster.scala
+        handshake.authorize(onComplete = Some((event: WebSocketHandshakeEvent) =>
+          sessionManager ! new SessionRegistration(event)
+       ))
     }
     case WebSocketFrame(frame) =>
-      val command = Command(frame.readText)
+      val command = Command(frame.readText, frame.channel)
       actorSystem.actorOf(Props(command.createProcessor)) ! command
   })
 
   def main(args: Array[String]) = {
     // XXX: set up database connection pool
+
     // XXX: allow port to be provided as command line options
 
-    val webServer = new WebServer(config, routes, actorSystem)
+    val webServer = new WebServer(webServerConfig, routes, actorSystem)
     webServer.start()
 
     Runtime.getRuntime.addShutdownHook(new Thread {

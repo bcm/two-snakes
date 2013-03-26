@@ -1,36 +1,43 @@
 package twosnakes.world.command
 
 import akka.actor._
+import org.jboss.netty.channel.Channel
 import spray.json._
-import twosnakes.world.message.Message
 
-abstract class BaseCommandJsonFormat[T] extends RootJsonFormat[T] {
-  def write(command: T) = throw new UnsupportedOperationException
+abstract class BaseCommandPacketJsonFormat[T] extends RootJsonFormat[T] {
+  def write(packet: T) = throw new UnsupportedOperationException
 }
 
-object CommandJsonProtocol extends DefaultJsonProtocol {
-  import EnterWorldCommandJsonProtocol._
-  import ChatCommandJsonProtocol._
+object CommandPacketJsonProtocol extends DefaultJsonProtocol {
+  import EnterWorldCommandPacketJsonProtocol._
+  import ChatCommandPacketJsonProtocol._
 
-  implicit object CommandJsonFormat extends BaseCommandJsonFormat[Command] {
+  implicit object CommandPacketJsonFormat extends BaseCommandPacketJsonFormat[CommandPacket] {
     def read(value: JsValue) = {
       value.asJsObject.getFields("type", "data") match {
-        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommand]
-        case Seq(JsString("chat"), JsObject(data)) => JsObject(data).convertTo[ChatCommand]
+        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommandPacket]
+        case Seq(JsString("chat"), JsObject(data)) => JsObject(data).convertTo[ChatCommandPacket]
         case _ => throw new DeserializationException("Invalid command type")
       }
     }
   }
 }
 
-trait Command {
+abstract class Command(val packet: CommandPacket, val channel: Channel) {
   def createProcessor: CommandProcessor
 }
 
-abstract class CommandProcessor extends Actor with ActorLogging
-
 object Command {
-  import CommandJsonProtocol._
+  import CommandPacketJsonProtocol._
 
-  def apply(source: String) = source.asJson.convertTo[Command]
+  def apply(source: String, channel: Channel) = {
+    val packet = source.asJson.convertTo[CommandPacket]
+    packet.createCommand(channel)
+  }
 }
+
+trait CommandPacket {
+  def createCommand(channel: Channel): Command
+}
+
+abstract class CommandProcessor extends Actor with ActorLogging
