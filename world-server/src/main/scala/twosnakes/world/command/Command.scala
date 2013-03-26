@@ -1,43 +1,35 @@
 package twosnakes.world.command
 
 import akka.actor._
-import org.jboss.netty.channel.Channel
 import spray.json._
 
-abstract class BaseCommandPacketJsonFormat[T] extends RootJsonFormat[T] {
+abstract class BaseCommandJsonFormat[T] extends RootJsonFormat[T] {
   def write(packet: T) = throw new UnsupportedOperationException
 }
 
-object CommandPacketJsonProtocol extends DefaultJsonProtocol {
-  import EnterWorldCommandPacketJsonProtocol._
-  import ChatCommandPacketJsonProtocol._
+object CommandJsonProtocol extends DefaultJsonProtocol {
+  import EnterWorldCommandJsonProtocol._
+  import ChatCommandJsonProtocol._
 
-  implicit object CommandPacketJsonFormat extends BaseCommandPacketJsonFormat[CommandPacket] {
+  implicit object CommandJsonFormat extends BaseCommandJsonFormat[Command] {
     def read(value: JsValue) = {
       value.asJsObject.getFields("type", "data") match {
-        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommandPacket]
-        case Seq(JsString("chat"), JsObject(data)) => JsObject(data).convertTo[ChatCommandPacket]
+        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommand]
+        case Seq(JsString("chat"), JsObject(data)) => JsObject(data).convertTo[ChatCommand]
         case _ => throw new DeserializationException("Invalid command type")
       }
     }
   }
 }
 
-abstract class Command(val packet: CommandPacket, val channel: Channel) {
+trait Command {
   def createProcessor: CommandProcessor
 }
 
 object Command {
-  import CommandPacketJsonProtocol._
+  import CommandJsonProtocol._
 
-  def apply(source: String, channel: Channel) = {
-    val packet = source.asJson.convertTo[CommandPacket]
-    packet.createCommand(channel)
-  }
-}
-
-trait CommandPacket {
-  def createCommand(channel: Channel): Command
+  def apply(source: String) = source.asJson.convertTo[Command]
 }
 
 abstract class CommandProcessor extends Actor with ActorLogging
