@@ -4,9 +4,17 @@ import spray.json._
 import twosnakes.world.message.ChatMessage
 
 // XXX: refine into different types of chat commands - say, msg, emote
+
 class ChatCommand(val text: String) extends Command {
-  def process = {
-    Seq(new ChatMessage(text))
+  def createProcessor = new ChatCommandProcessor()
+}
+
+class ChatCommandProcessor extends CommandProcessor {
+  def receive = {
+    case command: ChatCommand =>
+      log.warning("Received chat message: %s".format(command.text))
+      // XXX: send (new ChatMessage(command.text) to the client
+      context.stop(self)
   }
 }
 

@@ -78,7 +78,7 @@ $ sbt clean
 
 This method of running the server relies on the [sbt start script plugin](https://github.com/sbt/sbt-start-script) to generate a `target/start` script and [Foreman](https://github.com/ddollar/foreman) to run the script.
 
-Any time a dependency is added to the build, the start script must be regenerated:
+The project must be re-staged any time a dependency is added to the build or the application config file is modified:
 
 ```sh
 $ sbt stage

@@ -1,5 +1,6 @@
 package twosnakes.world.command
 
+import akka.actor._
 import spray.json._
 import twosnakes.world.message.Message
 
@@ -23,8 +24,10 @@ object CommandJsonProtocol extends DefaultJsonProtocol {
 }
 
 trait Command {
-  def process: Seq[Message]
+  def createProcessor: CommandProcessor
 }
+
+abstract class CommandProcessor extends Actor with ActorLogging
 
 object Command {
   import CommandJsonProtocol._
