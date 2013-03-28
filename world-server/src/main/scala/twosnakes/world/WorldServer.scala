@@ -7,12 +7,13 @@ import org.mashupbots.socko.routes._
 import org.mashupbots.socko.infrastructure.Logger
 import org.mashupbots.socko.webserver._
 import twosnakes.world.command.Command
-import twosnakes.world.message.Message
+import twosnakes.world.repository.db.DbSupervisor
 import twosnakes.world.session._
 
 object WorldServer extends Logger {
   val actorSystem = ActorSystem("WorldActorSystem")
   val sessionManager = actorSystem.actorOf(Props[SessionManager], "SessionManager")
+  val dbSupervisor = actorSystem.actorOf(Props[DbSupervisor], "DbSupervisor")
   val webServerConfig = WorldServerConfig(actorSystem)
 
   // XXX: when the client drops the connection, let the session stick around for a few minutes but then idle it out
@@ -22,7 +23,7 @@ object WorldServer extends Logger {
     case WebSocketHandshake(handshake) => handshake match {
       case Path("/websocket/") =>
         handshake.authorize(onComplete = Some((event: WebSocketHandshakeEvent) =>
-          sessionManager ! new SessionRegistration(event.channel)
+          sessionManager ! SessionRegistration(event.channel)
        ))
     }
     case WebSocketFrame(event) =>
@@ -30,8 +31,6 @@ object WorldServer extends Logger {
   })
 
   def main(args: Array[String]) = {
-    // XXX: set up database connection pool
-
     // XXX: allow port to be provided as command line options
 
     val webServer = new WebServer(webServerConfig, routes, actorSystem)

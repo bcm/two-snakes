@@ -9,7 +9,7 @@
     <appender-ref ref="STDOUT" />
   </root>
 
-  <logger name="akka" level="INFO"/>
+  <logger name="akka" level="DEBUG"/>
   <logger name="org.mashupbots.socko" level="INFO"/>
   <logger name="scala.slick" level="INFO"/>
 </configuration>
