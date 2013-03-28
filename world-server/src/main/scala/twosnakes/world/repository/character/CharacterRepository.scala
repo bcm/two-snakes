@@ -4,6 +4,7 @@ import akka.actor._
 import scala.slick.driver.PostgresDriver.simple._
 import Database.threadLocalSession
 import twosnakes.world.model.Character
+import twosnakes.world.repository.Repository
 import twosnakes.world.repository.db._
 
 object Characters extends Table[Character]("characters") {
@@ -19,13 +20,11 @@ object Characters extends Table[Character]("characters") {
   def * = id ~ name ~ str ~ dex ~ con ~ int ~ wis ~ cha <> (Character, Character.unapply _)
 }
 
-class CharacterRepository extends Actor with ActorLogging {
-  var querier: ActorRef = null
-
+class CharacterRepository extends Repository {
   def receive = {
     case FindCharacter(id) =>
       querier = sender
-      context.system.actorFor("/user/DbSupervisor") ! QueryDatabase(FindCharacterQuery(id))
+      dbPool ! QueryDatabase(FindCharacterQuery(id))
     // XXX: it'd be nice to specify query: FindCharacterQuery, but then I get this compilation error, and I don't
     //      understand variance well enough to fix it.
     //  found   : twosnakes.world.repository.character.FindCharacterQuery

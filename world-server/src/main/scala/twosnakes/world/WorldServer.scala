@@ -1,6 +1,7 @@
 package twosnakes.world
 
 import akka.actor._
+import akka.routing.SmallestMailboxRouter
 import java.util.Date
 import org.mashupbots.socko.events._
 import org.mashupbots.socko.routes._
@@ -11,10 +12,13 @@ import twosnakes.world.repository.db.DbSupervisor
 import twosnakes.world.session._
 
 object WorldServer extends Logger {
-  val actorSystem = ActorSystem("WorldActorSystem")
-  val sessionManager = actorSystem.actorOf(Props[SessionManager], "SessionManager")
-  val dbSupervisor = actorSystem.actorOf(Props[DbSupervisor], "DbSupervisor")
-  val webServerConfig = WorldServerConfig(actorSystem)
+  val worldActorSystem = ActorSystem("WorldActorSystem")
+  val sessionManager = worldActorSystem.actorOf(Props[SessionManager], "SessionManager")
+  val webServerConfig = WorldServerConfig(worldActorSystem)
+
+  val dbActorSystem = ActorSystem("DbActorSystem")
+  // note that the external config overrides this number of routees
+  val dbSupervisor = dbActorSystem.actorOf(Props[DbSupervisor].withRouter(SmallestMailboxRouter(2)), "DbSupervisor")
 
   // XXX: when the client drops the connection, let the session stick around for a few minutes but then idle it out
   // if the client doesn't try to reconnect
@@ -33,7 +37,7 @@ object WorldServer extends Logger {
   def main(args: Array[String]) = {
     // XXX: allow port to be provided as command line options
 
-    val webServer = new WebServer(webServerConfig, routes, actorSystem)
+    val webServer = new WebServer(webServerConfig, routes, worldActorSystem)
     webServer.start()
 
     Runtime.getRuntime.addShutdownHook(new Thread {

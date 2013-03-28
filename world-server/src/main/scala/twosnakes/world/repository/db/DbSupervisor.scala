@@ -7,6 +7,8 @@ import Database.threadLocalSession
 class DbSupervisor extends Actor with ActorLogging {
   val db = Database.forURL(System.getenv("DATABASE_URL"), driver = "org.postgresql.Driver")
 
+  // XXX: throw an error if the we can't connect
+
   def receive = {
     case QueryDatabase(query) =>
       val result = db withSession { query.execute }

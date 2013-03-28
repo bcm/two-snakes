@@ -11,6 +11,7 @@ case class EnterWorldCommand(characterId: Long) extends Command {
 }
 
 class EnterWorldCommandProcessor extends CommandProcessor {
+  val sessionManager = context.actorFor("/user/SessionManager")
   var currentSession: Session = null
 
   def receive = {
@@ -27,13 +28,13 @@ class EnterWorldCommandProcessor extends CommandProcessor {
       }
     case CharacterFound(character) =>
       log.debug("Entering world as %s (%d)".format(character.name, character.id))
-      context.actorFor("/user/SessionManager") ! SessionAttachCharacter(currentSession, character)
-      // XXX: do session sends through messaging
-      currentSession.send(new ChatMessage("Welcome to the world of Two Snakes!"))
+      sessionManager ! SessionAttachCharacter(currentSession, character)
+      sessionManager ! SessionSend(currentSession, new ChatMessage("Welcome to the world of Two Snakes!"))
       context.stop(self)
     case CharacterNotFound(id) =>
       log.error("Could not enter world as character %d: character not found".format(id))
-      currentSession.send(new ChatMessage("Something has gone terribly wrong - character does not exist"))
+      sessionManager !
+        SessionSend(currentSession, new ChatMessage("Something has gone terribly wrong - character does not exist"))
       context.stop(self)
   }
 }
