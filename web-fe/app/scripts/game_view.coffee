@@ -33,8 +33,12 @@ define [
 
       # XXX: chat pane subview
       # XXX: colorize system messages
-      this.listenTo @app.server, 'message:chat', (message) =>
-        @output.append("<li>#{message.formattedAt()} #{_.escape message.text}</li>")
+      this.listenTo @app.server, 'message:world-entered', (message) =>
+        name = if message.sentBy(@app.character()) then 'You' else _.escape message.characterRef.name
+        @output.append("<li>#{message.formattedAt()} #{name} logged in.</li>")
+      this.listenTo @app.server, 'message:chat-say', (message) =>
+        name = if message.sentBy(@app.character()) then 'You' else _.escape message.characterRef.name
+        @output.append("<li>#{message.formattedAt()} #{name} said: #{_.escape message.text}</li>")
 
       @app.connectToWorldServer()
 

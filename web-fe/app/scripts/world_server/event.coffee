@@ -5,7 +5,7 @@ define [
 ], ($, _, Backbone) ->
   'use strict'
 
-  class WorldServerMessage
+  class WorldServerEvent
     constructor: (@at) ->
       if @at?
         if _.isNumber(@at)

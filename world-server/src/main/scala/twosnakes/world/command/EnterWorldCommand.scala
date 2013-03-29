@@ -2,7 +2,8 @@ package twosnakes.world.command
 
 import akka.actor._
 import spray.json._
-import twosnakes.world.message.ChatMessage
+import twosnakes.world.Error
+import twosnakes.world.event._
 import twosnakes.world.repository.character._
 import twosnakes.world.session._
 
@@ -11,7 +12,6 @@ case class EnterWorldCommand(characterId: Long) extends Command {
 }
 
 class EnterWorldCommandProcessor extends CommandProcessor {
-  val sessionManager = context.actorFor("/user/SessionManager")
   var currentSession: Session = null
 
   def receive = {
@@ -29,12 +29,12 @@ class EnterWorldCommandProcessor extends CommandProcessor {
     case CharacterFound(character) =>
       log.debug("Entering world as %s (%d)".format(character.name, character.id))
       sessionManager ! SessionAttachCharacter(currentSession, character)
-      sessionManager ! SessionSend(currentSession, new ChatMessage("Welcome to the world of Two Snakes!"))
+      sessionManager ! SessionSendAll(new WorldEnteredEvent(character))
       context.stop(self)
     case CharacterNotFound(id) =>
       log.error("Could not enter world as character %d: character not found".format(id))
       sessionManager !
-        SessionSend(currentSession, new ChatMessage("Something has gone terribly wrong - character does not exist"))
+        SessionSend(currentSession, new SystemErrorEvent(Error.CHARACTER_NOT_FOUND))
       context.stop(self)
   }
 }

@@ -4,7 +4,7 @@ import akka.actor._
 import org.jboss.netty.channel.Channel
 import scala.collection.mutable.Map
 import twosnakes.world.command.Command
-import twosnakes.world.message.Message
+import twosnakes.world.event.Event
 import twosnakes.world.model.Character
 
 // Inspired by
@@ -28,8 +28,12 @@ class SessionManager extends Actor with ActorLogging {
       context.actorOf(Props(command.createProcessor)) ! Tuple2(command, session)
     case SessionAttachCharacter(session, character) =>
       initializeSession(new CharacterSession(session.channel, character))
-    case SessionSend(session, message) =>
-      session.send(message.serialize)
+    case SessionSend(session, event) =>
+      session.send(event.serialize)
+    case SessionSendAll(event) =>
+      val str = event.serialize
+      for (session <- sessionsByCharacterId.values)
+        session.send(str)
    }
 
   def initializeSession(session: Session): Session = {
@@ -47,4 +51,6 @@ class SessionManager extends Actor with ActorLogging {
 case class SessionRegistration(channel: Channel)
 case class SessionCommand(command: Command, channel: Channel)
 case class SessionAttachCharacter(session: Session, character: Character)
-case class SessionSend(session: Session, message: Message)
+case class SessionSend(session: Session, event: Event)
+case class SessionSendAll(event: Event)
+

@@ -2,10 +2,11 @@ define [
   'jquery',
   'underscore',
   'backbone',
-  'world_server/chat_message',
   'world_server/enter_world_command',
+  'world_server/chat_say_event',
+  'world_server/world_entered_event',
   'jquery_websocket'
-], ($, _, Backbone, ChatMessage, EnterWorldCommand) ->
+], ($, _, Backbone, EnterWorldCommand, ChatSayEvent, WorldEnteredEvent) ->
   'use strict'
 
   class WorldServer
@@ -17,8 +18,10 @@ define [
         open: (e) =>
           this.sendCommand(new EnterWorldCommand(@app.sessionManager.session.get('character').id))
         events:
-          chat: (e) =>
-            this.trigger "message:chat", new ChatMessage(e.data.at, e.data.text)
+          'chat-say': (e) =>
+            this.trigger "message:chat-say", new ChatSayEvent(e.data.at, e.data.character, e.data.text)
+          'world-entered': (e) =>
+            this.trigger "message:world-entered", new WorldEnteredEvent(e.data.at, e.data.character)
 
     sync: =>
       # overrides Backbone.sync to not perform the default behavior of sending an Ajax request

@@ -32,4 +32,6 @@ object Command {
   def apply(source: String) = source.asJson.convertTo[Command]
 }
 
-abstract class CommandProcessor extends Actor with ActorLogging
+abstract class CommandProcessor extends Actor with ActorLogging {
+  val sessionManager = context.actorFor("/user/SessionManager")
+}
