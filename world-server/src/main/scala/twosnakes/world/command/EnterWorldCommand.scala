@@ -22,8 +22,6 @@ class EnterWorldCommandProcessor extends CommandProcessor {
           context.stop(self)
         case _ =>
           currentSession = session
-          // XXX: if the socket dropped and had to be re-connected, then we may have an existing session for this
-          // character whose state can be assumed (and old socket dropped).
           context.actorOf(Props[CharacterRepository]) ! FindCharacter(command.characterId)
       }
     case CharacterFound(character) =>

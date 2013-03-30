@@ -1,7 +1,7 @@
 package twosnakes.world
 
 import akka.actor._
-import akka.routing.SmallestMailboxRouter
+import akka.routing._
 import java.util.Date
 import org.mashupbots.socko.events._
 import org.mashupbots.socko.routes._
@@ -18,10 +18,9 @@ object WorldServer extends Logger {
 
   val dbActorSystem = ActorSystem("DbActorSystem")
   // note that the external config overrides this number of routees
-  val dbSupervisor = dbActorSystem.actorOf(Props[DbSupervisor].withRouter(SmallestMailboxRouter(2)), "DbSupervisor")
+  val dbSupervisor = dbActorSystem.actorOf(Props[DbSupervisor].withRouter(FromConfig()), "DbSupervisor")
 
-  // XXX: when the client drops the connection, let the session stick around for a few minutes but then idle it out
-  // if the client doesn't try to reconnect
+  // XXX: when the client drops the connection, tell the session manager to get rid of the the old channel
 
   val routes = Routes({
     case WebSocketHandshake(handshake) => handshake match {

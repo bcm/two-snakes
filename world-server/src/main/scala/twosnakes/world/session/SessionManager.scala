@@ -1,7 +1,9 @@
 package twosnakes.world.session
 
 import akka.actor._
+import java.nio.channels.ClosedChannelException
 import org.jboss.netty.channel.Channel
+import org.jboss.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import scala.collection.mutable.Map
 import twosnakes.world.command.Command
 import twosnakes.world.event.Event
@@ -19,32 +21,56 @@ class SessionManager extends Actor with ActorLogging {
 
   def receive = {
     case SessionRegistration(channel) =>
-      initializeSession(new Session(channel))
+      initializeSession(new Session(), channel)
     case SessionCommand(command, channel) =>
       val session = sessionsByChannel.get(channel) match {
         case Some(s) => s
-        case None => initializeSession(new Session(channel))
+        case None => initializeSession(new Session(), channel)
       }
       context.actorOf(Props(command.createProcessor)) ! Tuple2(command, session)
     case SessionAttachCharacter(session, character) =>
-      initializeSession(new CharacterSession(session.channel, character))
+      channelsBySession.get(session) match {
+        case Some(channel) => initializeCharacterSession(new CharacterSession(character), channel)
+        case None => log.warning("No channel for session %s - client must have disconnected")
+      }
     case SessionSend(session, event) =>
-      session.send(event.serialize)
+      val text = event.serialize
+      channelsBySession.get(session) match {
+        case Some(channel) => sendText(session, channel, text)
+        case None => log.warning("No channel for session %s - client must have disconnected")
+      }
     case SessionSendAll(event) =>
-      val str = event.serialize
-      for (session <- sessionsByCharacterId.values)
-        session.send(str)
-   }
-
-  def initializeSession(session: Session): Session = {
-    channelsBySession += session -> session.channel
-    sessionsByChannel += session.channel -> session
-    session
+      val text = event.serialize
+      for (session <- sessionsByCharacterId.values) {
+        channelsBySession.get(session) match {
+          case Some(channel) => sendText(session, channel, text)
+          case None => log.warning("No channel for session %s - client must have disconnected")
+        }
+      }
   }
 
-  def initializeSession(session: CharacterSession): CharacterSession = {
+  def sendText(session: Session, channel: Channel, text: String) = try {
+    channel.write(new TextWebSocketFrame(text))
+  } catch {
+    case e: ClosedChannelException =>
+      // remove the channel and let a new one be initialized on the next registration for this session
+      channelsBySession.get(session) match {
+        case Some(channel) => {
+          channelsBySession -= session
+          sessionsByChannel -= channel
+        }
+        case None => // channel's already gone
+      }
+  }
+
+  def initializeSession(session: Session, channel: Channel) = {
+    channelsBySession += session -> channel
+    sessionsByChannel += channel -> session
+  }
+
+  def initializeCharacterSession(session: CharacterSession, channel: Channel) = {
+    initializeSession(session.asInstanceOf[Session], channel)
     sessionsByCharacterId += session.character.id -> session
-    initializeSession(session.asInstanceOf[Session]).asInstanceOf[CharacterSession]
   }
 }
 
