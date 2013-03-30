@@ -33,7 +33,7 @@ require.config {
 require ['app', 'modernizr'], (TwoSnakes, Modernizr) ->
   'use strict'
 
-  if Modernizr.websockets and Modernizr.localstorage
+  if Modernizr.websockets and Modernizr.localstorage and Modernizr.canvas
     window.app = new TwoSnakes
   else
     alert("Your browser sucks!")
