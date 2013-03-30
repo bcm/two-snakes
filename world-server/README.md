@@ -42,7 +42,7 @@ Database connection information is taken from the `DATABASE_URL` environment var
 #### Development environment
 
 ```sh
-$ echo DATABASE_URL='jdbc:postgresql://localhost/twosnakes_development?user=twosnakes&password=twosnakes' &gt;&gt; .env
+$ echo DATABASE_URL='jdbc:postgresql://localhost/twosnakes_development?user=twosnakes&password=twosnakes' >> .env
 ```
 
 ## 4. Build the server
