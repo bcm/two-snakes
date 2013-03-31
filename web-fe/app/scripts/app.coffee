@@ -42,7 +42,7 @@ define [
       this.session().set('character', character)
 
     exitWorld: =>
-      this.session().unset('character')
+      this.session().unset('character') if this.session()?
 
     inWorld: =>
       this.character()?

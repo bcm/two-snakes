@@ -32,7 +32,7 @@ object WorldServer extends Logger {
        ))
     }
     case WebSocketFrame(event) =>
-      sessionManager ! SessionCommand(Command(event.readText), event.channel)
+      sessionManager ! SessionExecuteCommand(Command(event.readText), event.channel)
   })
 
   def main(args: Array[String]) = {

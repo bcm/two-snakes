@@ -2,8 +2,9 @@ define [
   'jquery',
   'underscore',
   'backbone',
+  'world_server/exit_world_command',
   'text!../account_nav.html'
-], ($, _, Backbone, AccountNavTemplate) ->
+], ($, _, Backbone, ExitWorldCommand, AccountNavTemplate) ->
   'use strict'
 
   class AccountNavView extends Backbone.View
@@ -31,10 +32,13 @@ define [
       this
 
     exitWorld: =>
+      # XXX: delay for a few seconds so the player can cancel exiting
+      @app.server.sendCommand(new ExitWorldCommand())
       @app.exitWorld()
       @app.router.navigate('#logout', trigger: true)
 
     quit: =>
+      @app.server.sendCommand(new ExitWorldCommand())
       @app.quit()
 
     replaceWithQuitView: =>

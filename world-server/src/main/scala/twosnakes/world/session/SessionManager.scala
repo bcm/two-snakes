@@ -6,7 +6,7 @@ import org.jboss.netty.channel.Channel
 import org.jboss.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import scala.collection.mutable.Map
 import twosnakes.world.command.Command
-import twosnakes.world.event.Event
+import twosnakes.world.event._
 import twosnakes.world.model.Character
 
 // Inspired by
@@ -21,67 +21,106 @@ class SessionManager extends Actor with ActorLogging {
 
   def receive = {
     case SessionRegistration(channel) =>
-      initializeSession(new Session(), channel)
-    case SessionCommand(command, channel) =>
-      val session = sessionsByChannel.get(channel) match {
-        case Some(s) => s
-        case None => initializeSession(new Session(), channel)
+      addSession(new Session(), channel)
+    case SessionExecuteCommand(command, channel) =>
+      val commandArgs = sessionsByChannel.get(channel) match {
+        case Some(session: CharacterSession) => Tuple2(command, session)
+        case Some(session: Session) => Tuple2(command, session)
+        case None => addSession(new Session(), channel)
       }
-      context.actorOf(Props(command.createProcessor)) ! Tuple2(command, session)
+      context.actorOf(Props(command.createProcessor)) ! commandArgs
     case SessionAttachCharacter(session, character) =>
-      channelsBySession.get(session) match {
-        case Some(channel) => {
-          val characterSession = new CharacterSession(character)
-          initializeCharacterSession(characterSession, channel)
-          sender ! SessionCharacterAttached(characterSession)
-        }
-        case None => log.warning("No channel for session %s - client must have disconnected")
+      attachCharacterToSession(session, character) match {
+        case Some(newSession) =>
+          sender ! SessionCharacterAttached(newSession)
+        case None =>
+          // don't send the event
       }
     case SessionSend(session, event) =>
       val text = event.serialize
       channelsBySession.get(session) match {
         case Some(channel) => sendText(session, channel, text)
-        case None => log.warning("No channel for session %s - client must have disconnected")
+        case None => log.warning("No channel for session - client must have disconnected")
       }
     case SessionSendAll(event) =>
       val text = event.serialize
       for (session <- sessionsByCharacterId.values) {
         channelsBySession.get(session) match {
           case Some(channel) => sendText(session, channel, text)
-          case None => log.warning("No channel for session %s - client must have disconnected")
+          case None => log.warning("No channel for session - client must have disconnected")
         }
       }
+    case SessionEnd(session) =>
+      detachCharacterFromSession(session)
+      removeSession(session)
+      self ! SessionSendAll(WorldExitedEvent(session.character, session.location))
   }
 
-  def sendText(session: Session, channel: Channel, text: String) = try {
-    channel.write(new TextWebSocketFrame(text))
-  } catch {
-    case e: ClosedChannelException =>
-      // remove the channel and let a new one be initialized on the next registration for this session
-      channelsBySession.get(session) match {
-        case Some(channel) => {
-          channelsBySession -= session
-          sessionsByChannel -= channel
-        }
-        case None => // channel's already gone
-      }
-  }
-
-  def initializeSession(session: Session, channel: Channel) = {
+  def addSession(session: Session, channel: Channel) {
     channelsBySession += session -> channel
     sessionsByChannel += channel -> session
   }
 
-  def initializeCharacterSession(session: CharacterSession, channel: Channel) = {
-    initializeSession(session.asInstanceOf[Session], channel)
-    sessionsByCharacterId += session.character.id -> session
+  def attachCharacterToSession(session: Session, character: Character): Option[CharacterSession] = {
+    sessionsByCharacterId.get(character.id) match {
+      case Some(oldSession) =>
+        detachCharacterFromSession(oldSession)
+        removeSession(oldSession)
+        channelsBySession.get(session) match {
+          case Some(channel) =>
+            log.debug("Re-using existing session for %s".format(character))
+            val newSession = replaceSessionWithCharacterSession(session, channel, character)
+            newSession.location = oldSession.location
+            // return None because we don't want everybody being updated when an existing session gets a new channel
+            None
+          case None =>
+            log.warning("Can't re-use the existing session for %s because the channel is gone".format(character))
+            None
+        }
+      case None =>
+        channelsBySession.get(session) match {
+          case Some(channel) =>
+            Some(replaceSessionWithCharacterSession(session, channel, character))
+          case None =>
+            log.warning("Can't attach %s to the session because the channel is gone".format(character))
+            None
+        }
+    }
+  }
+
+  def replaceSessionWithCharacterSession(session: Session, channel: Channel, character: Character): CharacterSession = {
+    val characterSession = new CharacterSession(character)
+    removeSession(session)
+    addSession(characterSession, channel)
+    sessionsByCharacterId += character.id -> characterSession
+    characterSession
+  }
+
+  def sendText(session: Session, channel: Channel, text: String) {
+    try {
+      channel.write(new TextWebSocketFrame(text))
+    } catch {
+      case e: ClosedChannelException => removeSession(session)
+    }
+  }
+
+  def detachCharacterFromSession(session: CharacterSession) {
+    sessionsByCharacterId -= session.character.id
+  }
+
+  def removeSession(session: Session) {
+    channelsBySession.get(session) match {
+      case Some(channel) => sessionsByChannel -= channel
+      case None => // channel's already gone
+    }
+    channelsBySession -= session
   }
 }
 
 case class SessionRegistration(channel: Channel)
-case class SessionCommand(command: Command, channel: Channel)
+case class SessionExecuteCommand(command: Command, channel: Channel)
 case class SessionAttachCharacter(session: Session, character: Character)
 case class SessionCharacterAttached(session: CharacterSession)
 case class SessionSend(session: Session, event: Event)
 case class SessionSendAll(event: Event)
-
+case class SessionEnd(session: CharacterSession)

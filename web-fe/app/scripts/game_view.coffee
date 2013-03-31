@@ -43,6 +43,9 @@ define [
       this.listenTo @app.server, 'event:chat-say', (event) =>
         name = if event.sentBy(@app.character()) then 'You' else _.escape event.characterRef.name
         @output.append("<li>#{event.formattedAt()} #{name} said: #{_.escape event.text}</li>")
+      this.listenTo @app.server, 'event:world-exited', (event) =>
+        unless event.sentBy(@app.character())
+          @output.append("<li>#{event.formattedAt()} #{_.escape event.characterRef.name} logged out.</li>")
 
       @app.connectToWorldServer()
 

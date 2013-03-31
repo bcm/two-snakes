@@ -11,12 +11,14 @@ object EventJsonProtocol extends DefaultJsonProtocol {
   import ChatSayEventJsonProtocol._
   import SystemErrorEventJsonProtocol._
   import WorldEnteredEventJsonProtocol._
+  import WorldExitedEventJsonProtocol._
 
   implicit object EventJsonFormat extends BaseEventJsonFormat[Event] {
     def write(event: Event) = event match {
       case e: ChatSayEvent => JsObject("type" -> JsString(ChatSayEvent.eventType), "data" -> e.toJson)
       case e: SystemErrorEvent => JsObject("type" -> JsString(SystemErrorEvent.eventType), "data" -> e.toJson)
       case e: WorldEnteredEvent => JsObject("type" -> JsString(WorldEnteredEvent.eventType), "data" -> e.toJson)
+      case e: WorldExitedEvent => JsObject("type" -> JsString(WorldExitedEvent.eventType), "data" -> e.toJson)
       case _ => throw new SerializationException("Unrecognized event type")
     }
 

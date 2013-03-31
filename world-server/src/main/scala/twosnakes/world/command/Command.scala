@@ -8,14 +8,16 @@ abstract class BaseCommandJsonFormat[T] extends RootJsonFormat[T] {
 }
 
 object CommandJsonProtocol extends DefaultJsonProtocol {
-  import EnterWorldCommandJsonProtocol._
   import ChatCommandJsonProtocol._
+  import EnterWorldCommandJsonProtocol._
+  import ExitWorldCommandJsonProtocol._
 
   implicit object CommandJsonFormat extends BaseCommandJsonFormat[Command] {
     def read(value: JsValue) = {
       value.asJsObject.getFields("type", "data") match {
-        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommand]
         case Seq(JsString("chat"), JsObject(data)) => JsObject(data).convertTo[ChatCommand]
+        case Seq(JsString("enterworld"), JsObject(data)) => JsObject(data).convertTo[EnterWorldCommand]
+        case Seq(JsString("exitworld"), JsObject(data)) => JsObject(data).convertTo[ExitWorldCommand]
         case _ => throw new DeserializationException("Invalid command type")
       }
     }
