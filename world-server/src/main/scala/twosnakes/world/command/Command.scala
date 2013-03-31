@@ -34,4 +34,5 @@ object Command {
 
 abstract class CommandProcessor extends Actor with ActorLogging {
   val sessionManager = context.actorFor("/user/SessionManager")
+  val gridManager = context.actorFor("/user/GridManager")
 }

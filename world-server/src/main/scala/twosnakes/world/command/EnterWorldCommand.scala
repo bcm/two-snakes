@@ -4,6 +4,7 @@ import akka.actor._
 import spray.json._
 import twosnakes.world.Error
 import twosnakes.world.event._
+import twosnakes.world.grid._
 import twosnakes.world.repository.character._
 import twosnakes.world.session._
 
@@ -27,12 +28,18 @@ class EnterWorldCommandProcessor extends CommandProcessor {
     case CharacterFound(character) =>
       log.debug("Entering world as %s (%d)".format(character.name, character.id))
       sessionManager ! SessionAttachCharacter(currentSession, character)
-      sessionManager ! SessionSendAll(new WorldEnteredEvent(character))
-      context.stop(self)
     case CharacterNotFound(id) =>
       log.error("Could not enter world as character %d: character not found".format(id))
       sessionManager !
         SessionSend(currentSession, new SystemErrorEvent(Error.CHARACTER_NOT_FOUND))
+      context.stop(self)
+    case SessionCharacterAttached(characterSession) =>
+      currentSession = characterSession
+      gridManager ! AssignCharacterToRandomSquare(characterSession.character)
+    case CharacterAssignedToSquare(character, square) =>
+      val characterSession = currentSession.asInstanceOf[CharacterSession]
+      characterSession.location = square
+      sessionManager ! SessionSendAll(WorldEnteredEvent(characterSession.character, characterSession.location))
       context.stop(self)
   }
 }

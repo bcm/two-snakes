@@ -19,9 +19,9 @@ define [
           this.sendCommand(new EnterWorldCommand(@app.sessionManager.session.get('character').id))
         events:
           'chat-say': (e) =>
-            this.trigger "message:chat-say", new ChatSayEvent(e.data.at, e.data.character, e.data.text)
+            this.trigger "event:chat-say", new ChatSayEvent(e.data)
           'world-entered': (e) =>
-            this.trigger "message:world-entered", new WorldEnteredEvent(e.data.at, e.data.character)
+            this.trigger "event:world-entered", new WorldEnteredEvent(e.data)
 
     sync: =>
       # overrides Backbone.sync to not perform the default behavior of sending an Ajax request

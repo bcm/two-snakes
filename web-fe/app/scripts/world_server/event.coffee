@@ -6,7 +6,8 @@ define [
   'use strict'
 
   class WorldServerEvent
-    constructor: (@at) ->
+    constructor: (attributes) ->
+      @at = attributes.at
       if @at?
         if _.isNumber(@at)
           @at = new Date(@at)

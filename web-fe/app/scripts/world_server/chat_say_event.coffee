@@ -7,5 +7,6 @@ define [
   'use strict'
 
   class ChatSayEvent extends CharacterEvent
-    constructor: (at, characterRef, @text) ->
-      super(at, characterRef)
+    constructor: (attributes) ->
+      @text = attributes.text
+      super(attributes)

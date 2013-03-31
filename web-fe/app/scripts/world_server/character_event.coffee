@@ -7,8 +7,9 @@ define [
   'use strict'
 
   class CharacterEvent extends WorldServerEvent
-    constructor: (at, @characterRef) ->
-      super(at)
+    constructor: (attributes) ->
+      @characterRef = attributes.character
+      super(attributes)
 
     sentBy: (character) =>
       character.id is @characterRef.id

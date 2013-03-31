@@ -30,7 +30,11 @@ class SessionManager extends Actor with ActorLogging {
       context.actorOf(Props(command.createProcessor)) ! Tuple2(command, session)
     case SessionAttachCharacter(session, character) =>
       channelsBySession.get(session) match {
-        case Some(channel) => initializeCharacterSession(new CharacterSession(character), channel)
+        case Some(channel) => {
+          val characterSession = new CharacterSession(character)
+          initializeCharacterSession(characterSession, channel)
+          sender ! SessionCharacterAttached(characterSession)
+        }
         case None => log.warning("No channel for session %s - client must have disconnected")
       }
     case SessionSend(session, event) =>
@@ -77,6 +81,7 @@ class SessionManager extends Actor with ActorLogging {
 case class SessionRegistration(channel: Channel)
 case class SessionCommand(command: Command, channel: Channel)
 case class SessionAttachCharacter(session: Session, character: Character)
+case class SessionCharacterAttached(session: CharacterSession)
 case class SessionSend(session: Session, event: Event)
 case class SessionSendAll(event: Event)
 

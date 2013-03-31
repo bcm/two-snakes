@@ -8,12 +8,14 @@ import org.mashupbots.socko.routes._
 import org.mashupbots.socko.infrastructure.Logger
 import org.mashupbots.socko.webserver._
 import twosnakes.world.command.Command
+import twosnakes.world.grid.GridManager
 import twosnakes.world.repository.db.DbSupervisor
 import twosnakes.world.session._
 
 object WorldServer extends Logger {
   val worldActorSystem = ActorSystem("WorldActorSystem")
   val sessionManager = worldActorSystem.actorOf(Props[SessionManager], "SessionManager")
+  val gridManager = worldActorSystem.actorOf(Props[GridManager], "GridManager")
   val webServerConfig = WorldServerConfig(worldActorSystem)
 
   val dbActorSystem = ActorSystem("DbActorSystem")
