@@ -1,7 +1,6 @@
 class CharactersController < ApplicationController
   def index
-    characters = current_player.find_characters
-    render_jsend(success: {characters: ActiveModel::ArraySerializer.new(characters).as_json})
+    @characters = current_player.find_characters
   end
 
   def create

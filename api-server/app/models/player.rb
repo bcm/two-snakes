@@ -15,12 +15,12 @@ class Player < ActiveRecord::Base
 
   def reset_session_token
     token = self.class.generate_session_token
-    update_attributes!({session_token: token}, without_protection: true, validate: false)
+    update!(session_token: token)
     token
   end
 
   def clear_session_token
-    update_attributes!({session_token: nil}, without_protection: true, validate: false)
+    update!(session_token: nil)
     nil
   end
 

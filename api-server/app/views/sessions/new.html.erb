@@ -1,0 +1,7 @@
+<%= form_for @credentials, url: session_path, html: {id: 'login', class: 'login'} do |f| %>
+  <%= f.email_field :email, class: 'input-large', placeholder: 'E-mail' %>
+  <%= f.password_field :password, class: 'input-large', placeholder: 'Password' %>
+  <%= f.submit 'Log in', class: 'btn' %>
+  or
+  <%= link_to 'Sign up', new_player_path, class: 'btn btn-primary' %>
+<% end %>
