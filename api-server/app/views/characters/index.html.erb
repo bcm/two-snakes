@@ -2,7 +2,7 @@
   <h1>Choose a character</h1>
 </header>
 
-<ul id="character-selections" class="nav nav-list"></ul>
+<div id="characters"></div>
 
 <div class="btn-group">
   <button data-selection="character" name="enter-world" class="btn btn-primary disabled hidden">
@@ -13,3 +13,13 @@
   </button>
   <button name="create-character" class="btn">Create a character</button>
 </div>
+
+<script type="text/json" id="data">
+  {
+    "characters": <%= ActiveModel::ArraySerializer.new(@characters).to_json %>
+  }
+</script>
+
+<%= content_for :scripts do %>
+  <%= javascript_include_tag 'character_selector', data: {turbolinks_track: true } %>
+<% end %>
