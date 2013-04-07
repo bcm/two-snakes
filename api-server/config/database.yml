@@ -1,2 +1,2 @@
-# The db rake tasks blow up if this file does not exist, but we don't use it to configure the database.
+-# The db rake tasks blow up if this file does not exist, but we don't use it to configure the database.
 # Instead we add DATABASE_URL to the .env file in Rails.root.

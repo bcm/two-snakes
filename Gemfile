@@ -1,6 +1,6 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-ruby "2.0.0"
+ruby '2.0.0'
 
-gem "compass"
-gem "rails-api"
+gem 'compass', '~> 0.12.2'
+gem 'rails', '~> 4.0.0.beta1'

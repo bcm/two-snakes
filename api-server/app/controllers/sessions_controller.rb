@@ -1,18 +1,22 @@
 class SessionsController < ApplicationController
-  skip_before_filter :require_login, only: :create
+  skip_before_filter :require_login, except: :destroy
+
+  def new
+    @player = Player.new
+  end
 
   def create
-    if player = login(params[:email], params[:password])
+    if @player = login(params[:email], params[:password])
       player.reset_session_token
-      render_jsend(success: PlayerSerializer.new(player).serializable_hash)
+      redirect_to(characters_path)
     else
-      request_http_token_authentication("Two Snakes", message: "Authentication failed")
+      render(:new)
     end
   end
 
   def destroy
     logout
     current_player.clear_session_token
-    render_jsend(:success)
+    redirect_to(:new)
   end
 end

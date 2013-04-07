@@ -1,5 +1,6 @@
 ApiServer::Application.routes.draw do
-  resources :players, only: [:create], defaults: {format: :json}
-  resource :session, only: [:create, :destroy], defaults: {format: :json}
-  resources :characters, only: [:index, :create, :destroy], defaults: {format: :json}
+  root to: 'sessions#new'
+  resources :players, only: [:create]
+  resource :session, only: [:new, :create, :destroy]
+  resources :characters, only: [:index, :create, :destroy]
 end
