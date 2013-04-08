@@ -11,8 +11,52 @@
   <button data-selection="character" name="delete-character" class="btn btn-danger disabled hidden">
     Delete selected
   </button>
-  <button name="create-character" class="btn">Create a character</button>
+  <a href="#new" class="btn">Create a character</a>
 </div>
+
+<div id="new-character-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="character-new-label"
+     aria-hidden="true">
+  <form>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="character-new-label">New character</h3>
+    </div>
+    <div class="modal-body">
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="character_name">Name</label>
+            <div class="controls">
+              <input id="character_name" name="character[name]" type="name" class="input-xlarge" maxlength="255"
+                     required>
+            </div>
+          </div>
+        </fieldset>
+      <h4>Abilities</h4>
+      <div class="row-fluid">
+        <div class="span1">Str</div>
+        <div class="span2"><span id="character-new-str" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Dex</div>
+        <div class="span2"><span id="character-new-dex" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Con</div>
+        <div class="span2"><span id="character-new-con" class="input-mini uneditable-input">10</span></div>
+        <div class="span2"><button name="roll" class="btn pull-right" type="button">Roll</button></div>
+      </div>
+      <div class="row-fluid">
+        <div class="span1">Int</div>
+        <div class="span2"><span id="character-new-int" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Wis</div>
+        <div class="span2"><span id="character-new-wis" class="input-mini uneditable-input">10</span></div>
+        <div class="span1">Cha</div>
+        <div class="span2"><span id="character-new-cha" class="input-mini uneditable-input">10</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary">Create</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    </div>
+  </form>
+</div>
+
 
 <script type="text/json" id="data">
   {
