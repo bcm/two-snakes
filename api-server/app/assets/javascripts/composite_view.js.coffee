@@ -1,5 +1,6 @@
 "use strict"
 
+# CoffeeScript, Backbone 1.0-compatible version of the class from https://github.com/thoughtbot/backbone-support
 class CompositeView extends Backbone.View
   remove: =>
     super.remove()

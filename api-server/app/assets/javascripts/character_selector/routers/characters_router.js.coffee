@@ -2,12 +2,10 @@
 
 class Characters extends SwappableRouter
   initialize: (@characters) ->
-    @$el = $('#characters')
-
     this.route '', 'index'
 
   index: =>
-    view = new CharacterSelector.Views.CharacterList(collection: @characters)
-    this.swap(view)
+    view = new CharacterSelector.Views.CharactersIndex(collection: @characters)
+    view.render()
 
 window.CharacterSelector.Routers.Characters = Characters

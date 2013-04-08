@@ -31,7 +31,9 @@
         <% flash.each do |context, message| %>
           <%= alert_box message, context: context %>
         <% end %>
-        <%= yield %>
+        <div id="view">
+          <%= yield %>
+        </div>
       </div>
     </div>
 

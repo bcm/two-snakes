@@ -7,8 +7,8 @@ class CharacterList extends CompositeView
   render: =>
     @$el.empty()
     @collection.each (character) =>
-      child = new CharacterSelector.Views.CharacterChoice(model: character)
-      this.renderChildInto(child, this.el)
+      choice = new CharacterSelector.Views.CharacterChoice(model: character)
+      this.appendChildTo(choice, @$el)
     this
 
 window.CharacterSelector.Views.CharacterList = CharacterList
